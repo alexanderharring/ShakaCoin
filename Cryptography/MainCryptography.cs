@@ -3,15 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+
+using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.BC;
+using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Pqc.Crypto.Crystals.Dilithium;
+
 
 namespace ShakaCoin.Cryptography
 {
     public class MainCryptography
     {
 
-        public void Run(int test)
+        internal HomeKeys mainKeys;
+
+        public MainCryptography()
         {
-            Console.WriteLine("hello");
+            mainKeys = new HomeKeys();
+
+
+        }
+
+        internal byte[] SignSignature(AsymmetricKeyParameter privKey, string message)
+        {
+            return Signing.Sign(privKey, message);
+        }
+
+        internal bool VerifySignature(AsymmetricKeyParameter pubKey, string message, byte[] signature)
+        {
+            return Signing.VerifySignature(pubKey, message, signature);
+        }
+
+        public AsymmetricKeyParameter GetPublicKey()
+        {
+            return mainKeys.GetPublic();
+        }
+
+        public AsymmetricKeyParameter GetPrivateKey()
+        {
+            return mainKeys.GetPrivate();
         }
 
     }

@@ -6,7 +6,15 @@ namespace ShakaCoin
     {
         static void Main(string[] args)
         {
-            MainCryptography.Run(2);
+            MainCryptography mainCryptography = new MainCryptography();
+
+            var message = "Hello senny";
+
+            var sig = mainCryptography.SignSignature(mainCryptography.GetPrivateKey(), message);
+
+            var ver = mainCryptography.VerifySignature(mainCryptography.GetPublicKey(), message, sig);
+
+            Console.WriteLine(ver);
         }
     }
 }
