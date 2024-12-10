@@ -10,6 +10,7 @@ using Org.BouncyCastle.Asn1.BC;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pqc.Crypto.Crystals.Dilithium;
+using Microsoft.VisualBasic;
 
 
 namespace ShakaCoin.Cryptography
@@ -36,12 +37,13 @@ namespace ShakaCoin.Cryptography
             return Signing.VerifySignature(pubKey, message, signature);
         }
 
-        public AsymmetricKeyParameter GetPublicKey()
+        public string GetPublicKey()
         {
+
             return mainKeys.GetPublic();
         }
 
-        public AsymmetricKeyParameter GetPrivateKey()
+        public string GetPrivateKey()
         {
             return mainKeys.GetPrivate();
         }

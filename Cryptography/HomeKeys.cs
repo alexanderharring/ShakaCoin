@@ -13,8 +13,8 @@ namespace ShakaCoin.Cryptography
 {
     internal class HomeKeys
     {
-        private AsymmetricKeyParameter PubKey;
-        private AsymmetricKeyParameter PrivKey;
+        private DilithiumPublicKeyParameters PubKey;
+        private DilithiumPrivateKeyParameters PrivKey;
 
 
         internal HomeKeys()
@@ -27,20 +27,35 @@ namespace ShakaCoin.Cryptography
 
             var keyPair = keyPairGenerator.GenerateKeyPair();
 
-            PubKey = keyPair.Public;
-            PrivKey = keyPair.Private;
+            PubKey = (DilithiumPublicKeyParameters)keyPair.Public;
+            PrivKey = (DilithiumPrivateKeyParameters)keyPair.Private;
+
 
         }
 
 
-        internal AsymmetricKeyParameter GetPublic()
+        internal string GetPublic()
         {
-            return PubKey;
+            return Convert.ToHexString(PubKey.GetEncoded());
         }
 
-        internal AsymmetricKeyParameter GetPrivate()
+        internal string GetPrivate()
         {
-            return PrivKey;
+            return Convert.ToHexString(PrivKey.GetEncoded());
+        }
+
+        internal void PrintKey(bool isPub)
+        {
+            Console.WriteLine(PubKey.GetEncoded().Length);
+
+            if (isPub)
+            {
+                Console.WriteLine(GetPublic());
+            } else
+            {
+                Console.WriteLine(GetPrivate());
+            }
+
         }
 
     }

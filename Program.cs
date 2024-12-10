@@ -1,5 +1,8 @@
 ﻿using ShakaCoin.Cryptography;
 
+using Org.BouncyCastle.Pqc.Crypto.Crystals.Dilithium;
+using Org.BouncyCastle.Security;
+
 namespace ShakaCoin
 {
     public class Program
@@ -8,13 +11,8 @@ namespace ShakaCoin
         {
             MainCryptography mainCryptography = new MainCryptography();
 
-            var message = "Hello senny";
+           
 
-            var sig = mainCryptography.SignSignature(mainCryptography.GetPrivateKey(), message);
-
-            var ver = mainCryptography.VerifySignature(mainCryptography.GetPublicKey(), message, sig);
-
-            Console.WriteLine(ver);
         }
     }
 }
