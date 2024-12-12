@@ -11,7 +11,7 @@ namespace ShakaCoin
         {
             MainCryptography mainCryptography = new MainCryptography();
 
-           
+
 
         }
     }

@@ -17,6 +17,14 @@ namespace ShakaCoin.Cryptography
                 return sha.ComputeHash(data);
             }
         }
+
+        public static byte[] Hash256(byte[] data)
+        {
+            using (SHA256 sha = new SHA256Managed())
+            {
+                return sha.ComputeHash(data);
+            }
+        }
  
         
     }

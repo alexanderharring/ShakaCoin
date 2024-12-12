@@ -24,7 +24,6 @@ namespace ShakaCoin.Cryptography
         {
             mainKeys = new HomeKeys();
 
-
         }
 
         internal byte[] SignSignature(AsymmetricKeyParameter privKey, string message)
