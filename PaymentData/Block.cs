@@ -9,15 +9,27 @@ namespace ShakaCoin.PaymentData
 {
     internal class Block
     {
-        public string BlockHash;
         public string PreviousBlockHash;
+
+        public long TimeStamp;
+        public long Cycle;
+        public int TransactionNum;
 
         public List<Transaction> Transactions;
 
         public Block()
         {
-            
+            TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds();
+
+            Console.WriteLine(TimeStamp);
         }
+
+        public void AddTransaction(Transaction transaction)
+        {
+            Transactions.Add(transaction);
+        }
+
+        public 
 
     }
 }
