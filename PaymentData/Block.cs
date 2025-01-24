@@ -37,6 +37,7 @@ namespace ShakaCoin.PaymentData
         public void OverWriteIncrement()
         {
             byte[] miningIncBytes = BitConverter.GetBytes(MiningIncrement);
+
             Array.Copy(Target, 0, BlockHeader, 205, 4);
         }
 
