@@ -8,7 +8,7 @@ namespace ShakaCoin.PaymentData
 {
     internal class Transaction
     {
-
+    
 
 
     }
