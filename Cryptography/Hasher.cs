@@ -12,7 +12,7 @@ namespace ShakaCoin.Cryptography
     {
         public static byte[] Hash512(byte[] data)
         {
-            using (SHA512 sha = new SHA512Managed())
+            using (SHA512 sha = SHA512.Create())
             {
                 return sha.ComputeHash(data);
             }
@@ -20,7 +20,7 @@ namespace ShakaCoin.Cryptography
 
         public static byte[] Hash256(byte[] data)
         {
-            using (SHA256 sha = new SHA256Managed())
+            using (SHA256 sha = SHA256.Create())
             {
                 return sha.ComputeHash(data);
             }
