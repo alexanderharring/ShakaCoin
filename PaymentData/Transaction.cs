@@ -8,8 +8,15 @@ namespace ShakaCoin.PaymentData
 {
     internal class Transaction
     {
-    
 
+        public byte Version;
 
+        public ushort InputsCount;
+
+        public ushort OutputsCount;
+
+        public List<Input> Inputs = new List<Input>();
+
+        public List<Output> Outputs = new List<Output>();
     }
 }

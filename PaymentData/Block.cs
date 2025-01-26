@@ -65,7 +65,6 @@ namespace ShakaCoin.PaymentData
             BlockHeader = headerBuild;
         }
 
-        public 
 
     }
 }
