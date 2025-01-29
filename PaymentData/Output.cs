@@ -8,5 +8,10 @@ namespace ShakaCoin.PaymentData
 {
     internal class Output
     {
+
+        public ulong Amount;
+
+        public byte[] Destination = new byte[64];
+
     }
 }

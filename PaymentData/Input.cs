@@ -12,5 +12,12 @@ namespace ShakaCoin.PaymentData
 
         public ushort OutputIndex;
 
+        internal Input(byte[] tx, ushort oindex)
+        {
+            TransactionID = tx;
+            OutputIndex = oindex;
+
+        }
+
     }
 }

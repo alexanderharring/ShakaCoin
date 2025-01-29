@@ -17,6 +17,10 @@ namespace ShakaCoin.PaymentData
 
         public List<Input> Inputs = new List<Input>();
 
-        public List<Output> Outputs = new List<Output>();
+        public bool IsReturning;
+
+        public Output MainOutput = new Output();
+
+        public Output ReturnOutput = new Output();
     }
 }
