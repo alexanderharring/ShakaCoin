@@ -11,7 +11,7 @@ namespace ShakaCoin.PaymentData
 
         public ulong Amount;
 
-        public byte[] Destination = new byte[64];
+        public byte[] DestinationPublicKey = new byte[64];
 
     }
 }

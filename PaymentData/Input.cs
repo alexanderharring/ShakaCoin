@@ -10,13 +10,15 @@ namespace ShakaCoin.PaymentData
     {
         public byte[] TransactionID = new byte[64];
 
-        public ushort OutputIndex;
+        public bool IsReturner;
 
-        internal Input(byte[] tx, ushort oindex)
+        public byte[] Signature = new byte[64];
+
+        internal Input(byte[] tx, bool returner, byte[] signature)
         {
             TransactionID = tx;
-            OutputIndex = oindex;
-
+            IsReturner = returner;
+            Signature = signature;
         }
 
     }

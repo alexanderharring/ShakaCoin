@@ -8,5 +8,12 @@ namespace ShakaCoin.PaymentData
 {
     internal class BloomFilter
     {
+        public BitArray bitArray = new BitArray()
+
+        internal void BloomFilter()
+        {
+
+        }
+
     }
 }
