@@ -33,6 +33,15 @@ namespace ShakaCoin.Cryptography
 
         }
 
+        internal AsymmetricKeyParameter GetRawPublic()
+        {
+            return PubKey;
+        }
+
+        internal AsymmetricKeyParameter GetRawPrivate()
+        {
+            return PrivKey;
+        }
 
         internal string GetPublic()
         {

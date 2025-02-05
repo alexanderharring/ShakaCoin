@@ -19,9 +19,9 @@ namespace ShakaCoin.PaymentData
 
         public bool IsReturning;
 
-        public Output MainOutput = new Output();
+        public Output MainOutput;
 
-        public Output ReturnOutput = new Output();
+        public Output ReturnOutput;
 
         internal Transaction(byte version, ushort icount, ushort ocount, bool isReturning)
         {
@@ -34,16 +34,6 @@ namespace ShakaCoin.PaymentData
         internal void AddInput(Input newInput)
         {
             Inputs.Add(newInput);
-        }
-
-        internal void SetOutput(Output newOutput)
-        {
-            MainOutput = newOutput;
-        }
-
-        internal void SetReturnOutput(Output returnOutput)
-        {
-            ReturnOutput = returnOutput;
         }
 
     }

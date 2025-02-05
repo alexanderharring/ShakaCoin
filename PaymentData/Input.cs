@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Org.BouncyCastle.Crypto;
+using ShakaCoin.Cryptography;
 
 namespace ShakaCoin.PaymentData
 {
-    internal class Input
+    public class Input
     {
         public byte[] TransactionID = new byte[64];
 
@@ -14,11 +16,20 @@ namespace ShakaCoin.PaymentData
 
         public byte[] Signature = new byte[64];
 
-        internal Input(byte[] tx, bool returner, byte[] signature)
+        public Input(byte[] tx, bool returner)
         {
             TransactionID = tx;
             IsReturner = returner;
-            Signature = signature;
+        }
+
+        public void AddSignature(byte[] sig)
+        {
+            Signature = sig;
+        }
+
+        public bool VerifyInputSignature(AsymmetricKeyParameter pubKey)
+        {
+            return Signing.VerifySignature(pubKey, TransactionID, Signature);
         }
 
     }

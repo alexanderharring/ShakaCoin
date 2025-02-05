@@ -12,20 +12,20 @@ namespace ShakaCoin.Cryptography
     internal class Signing
     {
 
-        public static byte[] Sign(AsymmetricKeyParameter privKey, string message)
+        public static byte[] Sign(AsymmetricKeyParameter privKey, byte[] message)
         {
             
             DilithiumSigner signer = new DilithiumSigner();
             signer.Init(true, privKey);
-            var signature = signer.GenerateSignature(System.Text.Encoding.UTF8.GetBytes(message));
+            var signature = signer.GenerateSignature(message);
             return signature;
         }
 
-        public static bool VerifySignature(AsymmetricKeyParameter pubKey, string data, byte[] signature)
+        public static bool VerifySignature(AsymmetricKeyParameter pubKey, byte[] data, byte[] signature)
         {
             DilithiumSigner signer = new DilithiumSigner();
             signer.Init(false, pubKey);
-            var check = signer.VerifySignature(System.Text.Encoding.UTF8.GetBytes(data), signature);
+            var check = signer.VerifySignature(data, signature);
 
             return check;
         }

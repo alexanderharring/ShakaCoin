@@ -26,12 +26,12 @@ namespace ShakaCoin.Cryptography
 
         }
 
-        internal byte[] SignSignature(AsymmetricKeyParameter privKey, string message)
+        internal byte[] SignSignature(AsymmetricKeyParameter privKey, byte[] message)
         {
             return Signing.Sign(privKey, message);
         }
 
-        internal bool VerifySignature(AsymmetricKeyParameter pubKey, string message, byte[] signature)
+        internal bool VerifySignature(AsymmetricKeyParameter pubKey, byte[] message, byte[] signature)
         {
             return Signing.VerifySignature(pubKey, message, signature);
         }
@@ -40,6 +40,16 @@ namespace ShakaCoin.Cryptography
         {
 
             return mainKeys.GetPublic();
+        }
+
+        public AsymmetricKeyParameter GetRawPublic()
+        {
+            return mainKeys.GetRawPublic();
+        }
+
+        public AsymmetricKeyParameter GetRawPrivate()
+        {
+            return mainKeys.GetRawPrivate();
         }
 
         public string GetPrivateKey()

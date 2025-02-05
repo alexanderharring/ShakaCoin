@@ -11,7 +11,7 @@ namespace ShakaCoin.BloomFilters
     {
         int Size { get; }
         int HashFunctions { get; }
-        BitArray BitArray { get; }
+        BitArray BitArray { get; set; }
         void AddItem(byte[] data);
         bool ProbablyContains(byte[] data);
 
