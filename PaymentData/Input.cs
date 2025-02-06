@@ -22,9 +22,9 @@ namespace ShakaCoin.PaymentData
             IsReturner = returner;
         }
 
-        public void AddSignature(byte[] sig)
+        public void AddSignature(AsymmetricKeyParameter privKey)
         {
-            Signature = sig;
+            Signature = Signing.Sign(privKey, TransactionID);
         }
 
         public bool VerifyInputSignature(AsymmetricKeyParameter pubKey)
