@@ -1,9 +1,12 @@
-﻿using System;
+﻿using ShakaCoin.PaymentData;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
+using ShakaCoin.BloomFilters;
+//using ShakaCoin.
 
 namespace ShakaCoin.PaymentData
 {
@@ -29,9 +32,22 @@ namespace ShakaCoin.PaymentData
 
         public byte[] BlockHeader = new byte[209];
 
+        public OutputBloomFilter outputBF;
+
         public Block()
         {
+            outputBF = new OutputBloomFilter();
             
+        }
+
+        public void AddTransaction(Transaction newTx)
+        {
+            Transactions.Add(newTx);
+
+            foreach (Output ox in newTx.GetOutputs())
+            {
+                outputBF.AddItem(ox.ExportToBytes());
+            }
         }
 
         public void OverWriteIncrement()

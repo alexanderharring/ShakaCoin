@@ -19,5 +19,16 @@ namespace ShakaCoin.PaymentData
             DestinationPublicKey = pubk;
         }
 
+        public byte[] ExportToBytes() //72 bytes
+        {
+            byte[] output = new byte[72];
+
+            Buffer.BlockCopy(DestinationPublicKey, 0, output, 0, 64);
+
+            Buffer.BlockCopy(BitConverter.GetBytes(Amount), 0, output, 64, 8);
+
+            return output;
+        }
+
     }
 }

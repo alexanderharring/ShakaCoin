@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Org.BouncyCastle.Bcpg;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,9 @@ namespace ShakaCoin.PaymentData
 
         public bool IsReturning;
 
-        public Output MainOutput;
+        public Output? MainOutput;
 
-        public Output ReturnOutput;
+        public Output? ReturnOutput;
 
         internal Transaction(byte version, ushort icount, ushort ocount, bool isReturning)
         {
@@ -36,5 +37,30 @@ namespace ShakaCoin.PaymentData
             Inputs.Add(newInput);
         }
 
+        public List<Output> GetOutputs()
+        {
+            List<Output> outputs = new List<Output>();
+            if (MainOutput != null)
+            {
+                outputs.Add(MainOutput);
+            }
+            
+            if (IsReturning && (ReturnOutput != null))
+            {
+                outputs.Add(ReturnOutput);
+            }
+
+            return outputs;
+        }
+
+        public ulong CalculateFee()
+        {
+            ulong feeSum = 0;
+
+            foreach (Input input in Inputs)
+            {
+                feeSum += 
+            }
+        }
     }
 }
