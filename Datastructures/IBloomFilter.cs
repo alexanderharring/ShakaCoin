@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
 
-namespace ShakaCoin.BloomFilters
+namespace ShakaCoin.Datastructures
 {
     public interface IBloomFilter
     {

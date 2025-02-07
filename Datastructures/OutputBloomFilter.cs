@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Collections;
 using ShakaCoin.Cryptography;
 
-namespace ShakaCoin.BloomFilters
+namespace ShakaCoin.Datastructures
 {
     public class OutputBloomFilter : IBloomFilter
     {

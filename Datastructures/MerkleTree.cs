@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShakaCoin.MerkleTree
+namespace ShakaCoin.Datastructures
 {
     public class MerkleTree
     {
 
-        public MerkleNode rootNode {  get; set; }
+        public MerkleNode rootNode { get; set; }
 
         public MerkleTree()
         {

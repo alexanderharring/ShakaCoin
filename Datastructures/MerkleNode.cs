@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShakaCoin.MerkleTree
+namespace ShakaCoin.Datastructures
 {
     public class MerkleNode
     {
-        public byte[] Hash {  get; set; }
+        public byte[] Hash { get; set; }
         public MerkleNode? Left { get; set; }
-        public MerkleNode? Right { get; set;}
+        public MerkleNode? Right { get; set; }
 
         public MerkleNode(byte[] hashData)
         {

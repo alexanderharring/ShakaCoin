@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
-using ShakaCoin.BloomFilters;
+using ShakaCoin.Datastructures;
 //using ShakaCoin.
 
 namespace ShakaCoin.PaymentData

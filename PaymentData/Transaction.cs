@@ -4,17 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ShakaCoin.Blockchain;
 
 namespace ShakaCoin.PaymentData
 {
-    internal class Transaction
+    public class Transaction
     {
 
         public byte Version;
 
         public ushort InputsCount;
-
-        public ushort OutputsCount;
 
         public List<Input> Inputs = new List<Input>();
 
@@ -24,11 +23,12 @@ namespace ShakaCoin.PaymentData
 
         public Output? ReturnOutput;
 
-        internal Transaction(byte version, ushort icount, ushort ocount, bool isReturning)
+        private ulong? _Fee;
+
+        internal Transaction(byte version, ushort icount, bool isReturning)
         {
             Version = version;
             InputsCount = icount;
-            OutputsCount = ocount;
             IsReturning = isReturning;
         }
 
@@ -55,12 +55,28 @@ namespace ShakaCoin.PaymentData
 
         public ulong CalculateFee()
         {
+            if (_Fee != null)
+            {
+                return (ulong)_Fee;
+            }
+
             ulong feeSum = 0;
 
             foreach (Input input in Inputs)
             {
-                feeSum += 
+                feeSum += FileManagement.RetrieveOutputAmount();
             }
+
+            foreach (Output outpt in GetOutputs())
+            {
+                feeSum -= outpt.Amount;
+            }
+
+            _Fee = feeSum;
+
+            return (ulong)_Fee;
         }
+
+
     }
 }
