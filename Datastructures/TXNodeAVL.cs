@@ -35,6 +35,11 @@ namespace ShakaCoin.Datastructures
             return false;
         }
 
+        public int CalcualteBF()
+        {
+
+        }
+
         public int CompareTo(TXNodeAVL? other)
         {
             if (other == null)
@@ -56,6 +61,54 @@ namespace ShakaCoin.Datastructures
             }
 
             return -1;
+        }
+
+        private TXNodeAVL Insert(TXNodeAVL insertNode)
+        {
+            if (insertNode < this)
+            {
+                if (Left != null)
+                {
+                    Left.Insert(insertNode);
+                } else
+                {
+                    Left = insertNode;
+                }
+
+                
+            } else //putting equal values right instead of doing some sort of like duplicate counter or linked list thingy
+            {
+                if (Right != null)
+                {
+                    Right.Insert(insertNode);
+                }
+                else
+                {
+                    Right = insertNode;
+                }
+            }
+
+            
+        }
+
+        public static bool operator >(TXNodeAVL a1, TXNodeAVL a2)
+        {
+            return a1.CompareTo(a2) > 0;
+        }
+
+        public static bool operator <(TXNodeAVL a1, TXNodeAVL a2)
+        {
+            return a1.CompareTo(a2) < 0;
+        }
+
+        public static bool operator ==(TXNodeAVL a1, TXNodeAVL a2)
+        {
+            return a1.CompareTo(a2) == 0;
+        }
+
+        public static bool operator !=(TXNodeAVL a1, TXNodeAVL a2)
+        {
+            return a1.CompareTo(a2) != 0;
         }
     }
 }
