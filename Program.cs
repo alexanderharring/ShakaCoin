@@ -3,23 +3,25 @@ using ShakaCoin.PaymentData;
 
 using Org.BouncyCastle.Pqc.Crypto.Crystals.Dilithium;
 using Org.BouncyCastle.Security;
-using ShakaCoin.BloomFilters;
 using System.Text;
-
+using ShakaCoin.Networking;
 using System.Collections;
+using System.Net;
 namespace ShakaCoin
 {
     public class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            //MainCryptography mainCryptography = new MainCryptography();
+            NetworkPeer nPeer = new NetworkPeer(true);
 
+            _ = nPeer.StartListening();
 
-            //Block newB = new Block();
+            await Task.Delay(2500);
+            
+            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
 
-
-            OutputBloomFilter bloom = new OutputBloomFilter();
+            await nPeer.SendData(host.AddressList[0], Convert.FromHexString("abcdef"));
 
         }
     }

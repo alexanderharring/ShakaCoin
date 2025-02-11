@@ -37,7 +37,7 @@ namespace ShakaCoin.Datastructures
 
         public int CalcualteBF()
         {
-
+            return 0;
         }
 
         public int CompareTo(TXNodeAVL? other)
@@ -63,7 +63,7 @@ namespace ShakaCoin.Datastructures
             return -1;
         }
 
-        private TXNodeAVL Insert(TXNodeAVL insertNode)
+        private void Insert(TXNodeAVL insertNode)
         {
             if (insertNode < this)
             {
