@@ -24,13 +24,7 @@ namespace ShakaCoin
         //}
         static void Main(string[] args)
         {
-            HomeKeys hks = new HomeKeys();
 
-            var data = Hasher.GetBytesQuick("Hello!");
-
-            var sig = hks.SignData(data);
-
-            Console.WriteLine(hks.GetPublicKey().Length);
         }
 
     }

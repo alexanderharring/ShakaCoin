@@ -30,6 +30,11 @@ namespace ShakaCoin.Cryptography
         {
             return System.Text.Encoding.UTF8.GetBytes(data);
         }
+
+        public static string GetStringQuick(byte[] data)
+        {
+            return System.Text.Encoding.UTF8.GetString(data);
+        }
  
         
     }

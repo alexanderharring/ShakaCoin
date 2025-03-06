@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShakaCoin.Cryptography;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ namespace ShakaCoin.PaymentData
 
         public ulong Amount;
 
-        public byte[] DestinationPublicKey = new byte[64];
+        public byte[] DestinationPublicKey = new byte[32];
 
         public Output(ulong amount, byte[] pubk)
         {
@@ -19,13 +20,13 @@ namespace ShakaCoin.PaymentData
             DestinationPublicKey = pubk;
         }
 
-        public byte[] ExportToBytes() //72 bytes
+        public byte[] ExportToBytes() //40 bytes
         {
-            byte[] output = new byte[72];
+            byte[] output = new byte[40];
 
-            Buffer.BlockCopy(DestinationPublicKey, 0, output, 0, 64);
+            Buffer.BlockCopy(DestinationPublicKey, 0, output, 0, 32);
 
-            Buffer.BlockCopy(BitConverter.GetBytes(Amount), 0, output, 64, 8);
+            Buffer.BlockCopy(BitConverter.GetBytes(Amount), 0, output, 32, 8);
 
             return output;
         }

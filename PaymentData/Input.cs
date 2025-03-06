@@ -9,7 +9,7 @@ namespace ShakaCoin.PaymentData
 {
     public class Input
     {
-        public byte[] TransactionID = new byte[64];
+        public byte[] TransactionID = new byte[32];
 
         public bool IsReturner;
 
@@ -21,17 +21,16 @@ namespace ShakaCoin.PaymentData
             IsReturner = returner;
         }
 
-        public void AddSignature()
+        public void AddSignature(byte[] sig)
+        {
+            Signature = sig;
+        }
 
-        //public void AddSignature(AsymmetricKeyParameter privKey)
-        //{
-        //    Signature = Signing.Sign(privKey, TransactionID);
-        //}
+        public bool VerifySignature(byte[] pkHash)
+        {
+            return HomeKeys.VerifySignatureIsolated(Signature, TransactionID, pkHash);
+        }
 
-        //public bool VerifyInputSignature(AsymmetricKeyParameter pubKey)
-        //{
-        //    return Signing.VerifySignature(pubKey, TransactionID, Signature);
-        //}
 
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NSec.Cryptography;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ShakaCoin.Cryptography
 {
@@ -34,6 +35,12 @@ namespace ShakaCoin.Cryptography
 
             PublicKey newPubKey = PublicKey.Import(_algorithm, pubKey, KeyBlobFormat.RawPublicKey);
             return _algorithm.Verify(newPubKey, data, signature);
+        }
+
+        public static bool VerifySignatureIsolated(byte[] signature, byte[] data, byte[] pubKey)
+        {
+            PublicKey newPubKey = PublicKey.Import(SignatureAlgorithm.Ed25519, pubKey, KeyBlobFormat.RawPublicKey);
+            return SignatureAlgorithm.Ed25519.Verify(newPubKey, data, signature);
         }
     }
 }
