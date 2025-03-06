@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using ShakaCoin.Datastructures;
-//using ShakaCoin.
 
 namespace ShakaCoin.PaymentData
 {

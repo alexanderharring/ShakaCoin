@@ -1,8 +1,5 @@
 ﻿using ShakaCoin.Cryptography;
 using ShakaCoin.PaymentData;
-
-using Org.BouncyCastle.Pqc.Crypto.Crystals.Dilithium;
-using Org.BouncyCastle.Security;
 using System.Text;
 using ShakaCoin.Networking;
 using System.Collections;
@@ -11,18 +8,30 @@ namespace ShakaCoin
 {
     public class Program
     {
-        static async Task Main(string[] args)
+        //static async Task Main(string[] args)
+        //{
+        //    NetworkPeer nPeer = new NetworkPeer(true);
+
+        //    _ = nPeer.StartListening();
+
+        //    await Task.Delay(2500);
+
+
+        //    IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+
+        //    await nPeer.SendData(host.AddressList[0], Convert.FromHexString("abcdef"));
+
+        //}
+        static void Main(string[] args)
         {
-            NetworkPeer nPeer = new NetworkPeer(true);
+            HomeKeys hks = new HomeKeys();
 
-            _ = nPeer.StartListening();
+            var data = Hasher.GetBytesQuick("Hello!");
 
-            await Task.Delay(2500);
-            
-            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+            var sig = hks.SignData(data);
 
-            await nPeer.SendData(host.AddressList[0], Convert.FromHexString("abcdef"));
-
+            Console.WriteLine(hks.GetPublicKey().Length);
         }
+
     }
 }

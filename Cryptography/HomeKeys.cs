@@ -3,69 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Security;
-using Org.BouncyCastle.Pqc.Crypto.Crystals.Dilithium;
-using Org.BouncyCastle.Utilities;
+using NSec.Cryptography;
 
 namespace ShakaCoin.Cryptography
 {
     internal class HomeKeys
     {
-        private DilithiumPublicKeyParameters PubKey;
-        private DilithiumPrivateKeyParameters PrivKey;
 
+        private Ed25519 _algorithm = SignatureAlgorithm.Ed25519;
+
+        private Key _key;
 
         internal HomeKeys()
         {
-            var random = new SecureRandom();
-            var keyGenParameters = new DilithiumKeyGenerationParameters(random, DilithiumParameters.Dilithium5);
-            var keyPairGenerator = new DilithiumKeyPairGenerator();
-
-            keyPairGenerator.Init(keyGenParameters);
-
-            var keyPair = keyPairGenerator.GenerateKeyPair();
-
-            PubKey = (DilithiumPublicKeyParameters)keyPair.Public;
-            PrivKey = (DilithiumPrivateKeyParameters)keyPair.Private;
-
-
+            _key = new Key(_algorithm);
         }
 
-        internal AsymmetricKeyParameter GetRawPublic()
+        public byte[] SignData(byte[] data)
         {
-            return PubKey;
+            return _algorithm.Sign(_key, data);
         }
 
-        internal AsymmetricKeyParameter GetRawPrivate()
+        public byte[] GetPublicKey()
         {
-            return PrivKey;
+            return _key.Export(KeyBlobFormat.RawPublicKey);
         }
 
-        internal string GetPublic()
+        public bool VerifySignature(byte[] signature, byte[] data, byte[] pubKey)
         {
-            return Convert.ToHexString(PubKey.GetEncoded());
+
+            PublicKey newPubKey = PublicKey.Import(_algorithm, pubKey, KeyBlobFormat.RawPublicKey);
+            return _algorithm.Verify(newPubKey, data, signature);
         }
-
-        internal string GetPrivate()
-        {
-            return Convert.ToHexString(PrivKey.GetEncoded());
-        }
-
-        internal void PrintKey(bool isPub)
-        {
-            Console.WriteLine(PubKey.GetEncoded().Length);
-
-            if (isPub)
-            {
-                Console.WriteLine(GetPublic());
-            } else
-            {
-                Console.WriteLine(GetPrivate());
-            }
-
-        }
-
     }
 }

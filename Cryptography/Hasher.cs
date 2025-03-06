@@ -25,6 +25,11 @@ namespace ShakaCoin.Cryptography
                 return sha.ComputeHash(data);
             }
         }
+
+        public static byte[] GetBytesQuick(string data)
+        {
+            return System.Text.Encoding.UTF8.GetBytes(data);
+        }
  
         
     }

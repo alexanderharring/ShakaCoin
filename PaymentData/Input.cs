@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Org.BouncyCastle.Crypto;
 using ShakaCoin.Cryptography;
 
 namespace ShakaCoin.PaymentData
@@ -22,15 +21,17 @@ namespace ShakaCoin.PaymentData
             IsReturner = returner;
         }
 
-        public void AddSignature(AsymmetricKeyParameter privKey)
-        {
-            Signature = Signing.Sign(privKey, TransactionID);
-        }
+        public void AddSignature()
 
-        public bool VerifyInputSignature(AsymmetricKeyParameter pubKey)
-        {
-            return Signing.VerifySignature(pubKey, TransactionID, Signature);
-        }
+        //public void AddSignature(AsymmetricKeyParameter privKey)
+        //{
+        //    Signature = Signing.Sign(privKey, TransactionID);
+        //}
+
+        //public bool VerifyInputSignature(AsymmetricKeyParameter pubKey)
+        //{
+        //    return Signing.VerifySignature(pubKey, TransactionID, Signature);
+        //}
 
     }
 }
