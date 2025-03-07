@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ShakaCoin.Cryptography;
 using ShakaCoin.PaymentData;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ShakaCoin.Blockchain
 {
@@ -14,6 +16,7 @@ namespace ShakaCoin.Blockchain
         private static string BlockDir = Path.Combine(_appDataPath, "Blocks");
         private static string OutputsDir = Path.Combine(_appDataPath, "Outputs");
 
+        private DatabaseInteraction _outputDB;
 
         public FileManagement()
         {
@@ -31,6 +34,8 @@ namespace ShakaCoin.Blockchain
             {
                 Directory.CreateDirectory(OutputsDir);
             }
+
+            _outputDB = new DatabaseInteraction(OutputsDir);
         }
 
         public void WriteBlock(Block block)
@@ -39,6 +44,26 @@ namespace ShakaCoin.Blockchain
             string fileP = Path.Combine(BlockDir, fName);
 
             File.WriteAllBytes(fileP, block.GetBytes());
+
+            foreach (Transaction tx in block.Transactions)
+            {
+                for (int i = 0; i < tx.Outputs.Count;  i++)
+                {
+                    byte[] key = new byte[33];
+
+                    Buffer.BlockCopy(Hasher.Hash256(tx.GetBytes()), 0, key, 0, 32);
+                    key[32] = (byte)i;
+
+                    byte[] value = new byte[12]; // block height (4) + amount (8)
+                    Buffer.BlockCopy(BitConverter.GetBytes(block.BlockHeight), 0, value, 0, 4);
+                    Buffer.BlockCopy(BitConverter.GetBytes(tx.Outputs[i].Amount), 0, value, 4, 8);
+
+
+                    _outputDB.AddValue(key, value);
+
+                    
+                }
+            }
         }
 
         public void TestFile()

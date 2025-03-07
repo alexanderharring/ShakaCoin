@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 using ShakaCoin.Blockchain;
 
 namespace ShakaCoin.PaymentData
@@ -12,20 +13,15 @@ namespace ShakaCoin.PaymentData
 
         public byte Version;
 
-        public ushort InputsCount;
-
         public List<Input> Inputs = new List<Input>();
-
-        public bool IsReturning;
 
         public List<Output> Outputs = new List<Output>();
 
         private ulong? _Fee;
 
-        public Transaction(byte version, ushort icount) 
+        public Transaction(byte version) 
         {
             Version = version;
-            InputsCount = icount;
         }
 
         public void AddInput(Input newInput)
@@ -62,6 +58,32 @@ namespace ShakaCoin.PaymentData
             return (ulong)_Fee;
         }
 
+        public byte[] GetBytes() // 140 bytes
+        {
+            // version (1) + inputcount (1) + inputs( n * 97 ) + outputcount (1) + outputs ( n * 40 )
+            byte[] TransactionBytes = new byte[3 + 97 * Inputs.Count + 40 * Outputs.Count];
+
+            TransactionBytes[0] = Version;
+            TransactionBytes[1] = (byte)Inputs.Count;
+
+            for (int i = 0; i < Inputs.Count; i++)
+            {
+                int startingInd = 2 + i * 97;
+                Buffer.BlockCopy(Inputs[i].GetBytes(), 0, TransactionBytes, 0, 97);
+            }
+
+            TransactionBytes[2 + 97 * Inputs.Count] = (byte)Outputs.Count;
+
+            for (int i = 0; i < Outputs.Count; i++)
+            {
+                int startingInd = 3 + 97 * Inputs.Count + i * 40;
+                Buffer.BlockCopy(Outputs[i].ExportToBytes(), 0, TransactionBytes, 0, 40);
+            }
+
+            return TransactionBytes;
+
+
+        }
 
     }
 }

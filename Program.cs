@@ -26,10 +26,8 @@ namespace ShakaCoin
         //}
         static void Main(string[] args)
         {
-            uint x = 0;
 
-            Console.WriteLine(x.ToString());
-
+    
         }
 
     }

@@ -11,14 +11,14 @@ namespace ShakaCoin.PaymentData
     {
         public byte[] TransactionID = new byte[32];
 
-        public bool IsReturner;
+        public byte OutputIndex;
 
         public byte[] Signature = new byte[64];
 
-        public Input(byte[] tx, bool returner)
+        public Input(byte[] tx, byte outputIndex)
         {
             TransactionID = tx;
-            IsReturner = returner;
+            OutputIndex = outputIndex;
         }
 
         public void AddSignature(byte[] sig)
@@ -29,6 +29,20 @@ namespace ShakaCoin.PaymentData
         public bool VerifySignature(byte[] pk)
         {
             return HomeKeys.VerifySignatureIsolated(Signature, TransactionID, pk);
+        }
+
+        public byte[] GetBytes() // 97 bytes
+        {
+            // TXID (32) + Oind (1) + Sig (64)
+
+            byte[] exportBytes = new byte[97];
+
+            Buffer.BlockCopy(TransactionID, 0, exportBytes, 0, 32);
+            exportBytes[32] = OutputIndex;
+            Buffer.BlockCopy(Signature, 0, exportBytes, 33, 64);
+
+            return exportBytes;
+
         }
 
 
