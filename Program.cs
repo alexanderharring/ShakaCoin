@@ -4,6 +4,8 @@ using System.Text;
 using ShakaCoin.Networking;
 using System.Collections;
 using System.Net;
+using ShakaCoin.Blockchain;
+
 namespace ShakaCoin
 {
     public class Program
@@ -24,6 +26,9 @@ namespace ShakaCoin
         //}
         static void Main(string[] args)
         {
+            uint x = 0;
+
+            Console.WriteLine(x.ToString());
 
         }
 

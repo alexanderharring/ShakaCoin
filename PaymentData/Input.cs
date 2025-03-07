@@ -26,9 +26,9 @@ namespace ShakaCoin.PaymentData
             Signature = sig;
         }
 
-        public bool VerifySignature(byte[] pkHash)
+        public bool VerifySignature(byte[] pk)
         {
-            return HomeKeys.VerifySignatureIsolated(Signature, TransactionID, pkHash);
+            return HomeKeys.VerifySignatureIsolated(Signature, TransactionID, pk);
         }
 
 

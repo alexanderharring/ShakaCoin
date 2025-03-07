@@ -42,5 +42,10 @@ namespace ShakaCoin.Cryptography
             PublicKey newPubKey = PublicKey.Import(SignatureAlgorithm.Ed25519, pubKey, KeyBlobFormat.RawPublicKey);
             return SignatureAlgorithm.Ed25519.Verify(newPubKey, data, signature);
         }
+
+        public static bool VerifyPublicKey(byte[] pubKeyMaybe)
+        {
+            return PublicKey.TryImport(SignatureAlgorithm.Ed25519, pubKeyMaybe, KeyBlobFormat.RawPublicKey, out _);
+        }
     }
 }

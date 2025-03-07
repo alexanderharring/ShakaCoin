@@ -18,38 +18,24 @@ namespace ShakaCoin.PaymentData
 
         public bool IsReturning;
 
-        public Output? MainOutput;
-
-        public Output? ReturnOutput;
+        public List<Output> Outputs = new List<Output>();
 
         private ulong? _Fee;
 
-        internal Transaction(byte version, ushort icount, bool isReturning)
+        public Transaction(byte version, ushort icount) 
         {
             Version = version;
             InputsCount = icount;
-            IsReturning = isReturning;
         }
 
-        internal void AddInput(Input newInput)
+        public void AddInput(Input newInput)
         {
             Inputs.Add(newInput);
         }
 
-        public List<Output> GetOutputs()
+        public void AddOutput(Output newOutput)
         {
-            List<Output> outputs = new List<Output>();
-            if (MainOutput != null)
-            {
-                outputs.Add(MainOutput);
-            }
-            
-            if (IsReturning && (ReturnOutput != null))
-            {
-                outputs.Add(ReturnOutput);
-            }
-
-            return outputs;
+            Outputs.Add(newOutput);
         }
 
         public ulong CalculateFee()
@@ -66,7 +52,7 @@ namespace ShakaCoin.PaymentData
                 feeSum += FileManagement.RetrieveOutputAmount();
             }
 
-            foreach (Output outpt in GetOutputs())
+            foreach (Output outpt in Outputs)
             {
                 feeSum -= outpt.Amount;
             }

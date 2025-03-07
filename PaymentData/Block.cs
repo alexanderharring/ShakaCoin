@@ -9,11 +9,11 @@ using ShakaCoin.Datastructures;
 
 namespace ShakaCoin.PaymentData
 {
-    internal class Block
+    public class Block
     {
-        public byte[] PreviousBlockHash = new byte[64];
+        public byte[] PreviousBlockHash = new byte[32];
 
-        public byte[] MerkleRoot = new byte[64];
+        public byte[] MerkleRoot = new byte[32];
 
         public byte Version;
 
@@ -23,7 +23,7 @@ namespace ShakaCoin.PaymentData
 
         public uint MiningIncrement = 0;
 
-        public byte[] Target = new byte[64];
+        public byte[] Target = new byte[32];
 
         public ushort TransactionCount;
 
@@ -32,6 +32,8 @@ namespace ShakaCoin.PaymentData
         public byte[] BlockHeader = new byte[209];
 
         public OutputBloomFilter outputBF;
+
+        private ulong? _feeSum;
 
         public Block()
         {
@@ -43,7 +45,7 @@ namespace ShakaCoin.PaymentData
         {
             Transactions.Add(newTx);
 
-            foreach (Output ox in newTx.GetOutputs())
+            foreach (Output ox in newTx.Outputs)
             {
                 outputBF.AddItem(ox.ExportToBytes());
             }
@@ -80,7 +82,27 @@ namespace ShakaCoin.PaymentData
             BlockHeader = headerBuild;
         }
 
+        public ulong GetBlockFee()
+        {
+            if (_feeSum != null)
+            {
+                return (ulong)_feeSum;
+            }
 
+            _feeSum = 0;
+
+            foreach (Transaction tx in Transactions)
+            {
+                _feeSum += tx.CalculateFee();
+            }
+
+            return (ulong)_feeSum;
+        }
+
+        public byte[] GetBytes()
+        {
+            return [];
+        }
 
 
     }
