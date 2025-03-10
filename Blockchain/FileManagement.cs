@@ -73,6 +73,11 @@ namespace ShakaCoin.Blockchain
 
         }
 
+        public bool VerifyOutput()
+        {
+
+        }
+
         public static ulong RetrieveOutputAmount()
         {
             return 0;
