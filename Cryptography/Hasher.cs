@@ -40,6 +40,11 @@ namespace ShakaCoin.Cryptography
         {
             return Convert.ToHexString(data);
         }
+        
+        public static byte[] GetBytesFromHexStringQuick(string data)
+        {
+            return Convert.FromHexString(data);
+        }
  
         
     }

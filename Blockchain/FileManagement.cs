@@ -75,12 +75,32 @@ namespace ShakaCoin.Blockchain
 
         public bool VerifyOutput()
         {
-
+            return true;
         }
 
         public static ulong RetrieveOutputAmount()
         {
             return 0;
+        }
+
+        public void DBAddValue(byte[] key, byte[] value)
+        {
+            _outputDB.AddValue(key, value);
+        }
+
+        public void DBRemoveValue(byte[] key)
+        {
+            _outputDB.RemoveValue(key);
+        }
+
+        public byte[] DBGetValue(byte[] key)
+        {
+            return _outputDB.GetValue(key);
+        }
+
+        public void DBCLose()
+        {
+            _outputDB.Close();
         }
     }
 }

@@ -5,6 +5,7 @@ using ShakaCoin.Networking;
 using System.Collections;
 using System.Net;
 using ShakaCoin.Blockchain;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ShakaCoin
 {
@@ -26,8 +27,13 @@ namespace ShakaCoin
         //}
         static void Main(string[] args)
         {
+            HomeKeys hk = new HomeKeys();
 
-    
+            var pubKey = hk.GetPublicKey();
+            var privateKey = hk.GetPrivateKey();
+
+            Console.WriteLine(Hasher.GetHexStringQuick(pubKey));
+            Console.WriteLine(Hasher.GetHexStringQuick(privateKey));
         }
 
     }

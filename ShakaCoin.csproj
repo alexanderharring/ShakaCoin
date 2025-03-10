@@ -9,11 +9,9 @@
 
   <ItemGroup>
     <PackageReference Include="LevelDB.Standard" Version="2.1.6.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.8.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.8.2" />
     <PackageReference Include="NSec.Cryptography" Version="24.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Testing\" />
   </ItemGroup>
 
 </Project>

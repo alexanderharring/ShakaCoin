@@ -4,20 +4,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NSec.Cryptography;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
 namespace ShakaCoin.Cryptography
 {
-    internal class HomeKeys
+    public class HomeKeys
     {
 
         private Ed25519 _algorithm = SignatureAlgorithm.Ed25519;
 
         private Key _key;
 
-        internal HomeKeys()
+
+
+        public HomeKeys()
         {
             _key = new Key(_algorithm);
+        }
+
+        public HomeKeys(byte[] privkey)
+        {
+            _key = Key.Import(_algorithm, privkey, KeyBlobFormat.RawPrivateKey);
         }
 
         public byte[] SignData(byte[] data)
@@ -25,8 +30,14 @@ namespace ShakaCoin.Cryptography
             return _algorithm.Sign(_key, data);
         }
 
+        public byte[] GetPrivateKey()
+        {
+            return _key.Export(KeyBlobFormat.RawPrivateKey);
+        }
+
         public byte[] GetPublicKey()
         {
+
             return _key.Export(KeyBlobFormat.RawPublicKey);
         }
 
