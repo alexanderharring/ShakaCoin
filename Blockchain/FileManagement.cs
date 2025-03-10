@@ -54,10 +54,10 @@ namespace ShakaCoin.Blockchain
                     Buffer.BlockCopy(Hasher.Hash256(tx.GetBytes()), 0, key, 0, 32);
                     key[32] = (byte)i;
 
-                    byte[] value = new byte[12]; // block height (4) + amount (8)
+                    byte[] value = new byte[44]; // block height (4) + amount (8)
                     Buffer.BlockCopy(BitConverter.GetBytes(block.BlockHeight), 0, value, 0, 4);
                     Buffer.BlockCopy(BitConverter.GetBytes(tx.Outputs[i].Amount), 0, value, 4, 8);
-
+                    Buffer.BlockCopy(tx.Outputs[i].DestinationPublicKey, 0, value, 12, 32);
 
                     _outputDB.AddValue(key, value);
 
@@ -73,9 +73,9 @@ namespace ShakaCoin.Blockchain
 
         }
 
-        public bool VerifyOutput()
+        public bool VerifyOutput(byte[] ox)
         {
-            return true;
+            return (_outputDB.GetValue(ox) != null);
         }
 
         public static ulong RetrieveOutputAmount()

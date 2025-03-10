@@ -20,6 +20,7 @@ namespace ShakaCoin.PaymentData
             DestinationPublicKey = pubk;
         }
 
+
         public byte[] ExportToBytes() //40 bytes
         {
             byte[] output = new byte[40];

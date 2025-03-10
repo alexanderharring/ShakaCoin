@@ -27,13 +27,8 @@ namespace ShakaCoin
         //}
         static void Main(string[] args)
         {
-            HomeKeys hk = new HomeKeys();
 
-            var pubKey = hk.GetPublicKey();
-            var privateKey = hk.GetPrivateKey();
-
-            Console.WriteLine(Hasher.GetHexStringQuick(pubKey));
-            Console.WriteLine(Hasher.GetHexStringQuick(privateKey));
+            Console.WriteLine("Hi");
         }
 
     }

@@ -30,10 +30,10 @@ namespace ShakaCoin.Cryptography
             return _algorithm.Sign(_key, data);
         }
 
-        public byte[] GetPrivateKey()
-        {
-            return _key.Export(KeyBlobFormat.RawPrivateKey);
-        }
+        //public byte[] GetPrivateKey()
+        //{
+        //    return _key.Export(KeyBlobFormat.RawPrivateKey);
+        //}
 
         public byte[] GetPublicKey()
         {
