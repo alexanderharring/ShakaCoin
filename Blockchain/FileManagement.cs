@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using ShakaCoin.PaymentData;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -68,6 +69,32 @@ namespace ShakaCoin.Blockchain
 
                     
                 }
+            }
+        }
+
+        public byte[] ReadBlock(uint height)
+        {
+            string fName = "b" + height.ToString() + ".dat";
+            string fileP = Path.Combine(BlockDir, fName);
+
+            try
+            {
+                return File.ReadAllBytes(fileP);
+            }
+            catch (FileNotFoundException)
+            {
+
+            }
+
+            return [];
+
+        }
+
+        private void CheckGenesisBlock()
+        {
+            if (ReadBlock(0).Length == 0) // no genesis block
+            {
+
             }
         }
 

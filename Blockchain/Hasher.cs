@@ -43,7 +43,15 @@ namespace ShakaCoin.Blockchain
 
         public static byte[] GetBytesFromHexStringQuick(string data)
         {
-            return Convert.FromHexString(data);
+            try
+            {
+                return Convert.FromHexString(data);
+            } catch
+            {
+                return [];
+            }
+            
+
         }
 
 

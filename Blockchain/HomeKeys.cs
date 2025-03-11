@@ -18,7 +18,12 @@ namespace ShakaCoin.Blockchain
 
         internal HomeKeys()
         {
-            _key = new Key(_algorithm);
+
+            var creationParameters = new KeyCreationParameters();
+
+            creationParameters.ExportPolicy = KeyExportPolicies.AllowPlaintextArchiving;
+
+            _key = new Key(_algorithm, creationParameters);
 
         }
 
@@ -32,10 +37,10 @@ namespace ShakaCoin.Blockchain
             return _algorithm.Sign(_key, data);
         }
 
-        //public byte[] GetPrivateKey()
-        //{
-        //    return _key.Export(KeyBlobFormat.RawPrivateKey);
-        //}
+        public byte[] GetPrivateKey()
+        {
+            return _key.Export(KeyBlobFormat.RawPrivateKey);
+        }
 
         internal byte[] GetPublicKey()
         {

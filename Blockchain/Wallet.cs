@@ -34,6 +34,12 @@ namespace ShakaCoin.Blockchain
         {
             return _hk.GetPublicKey();
         }
+
+        public byte[] GetPK()
+        {
+            return _hk.GetPrivateKey();
+        }
+
         public static bool VerifySignature(byte[] signature, byte[] data, byte[] pubKey)
         {
             return HomeKeys.VerifySignatureIsolated(signature, data, pubKey);

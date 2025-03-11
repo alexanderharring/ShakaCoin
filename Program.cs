@@ -26,7 +26,8 @@ namespace ShakaCoin
         //}
         static void Main(string[] args)
         {
-            MainLogic.Initiate();
+            var m = new MainLogic();
+
 
         }
 
