@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ShakaCoin.Cryptography;
 using ShakaCoin.PaymentData;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -15,6 +14,7 @@ namespace ShakaCoin.Blockchain
         private static string _appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), _appName);
         private static string BlockDir = Path.Combine(_appDataPath, "Blocks");
         private static string OutputsDir = Path.Combine(_appDataPath, "Outputs");
+        private static string WalletsDir = Path.Combine(_appDataPath, "Wallets");
 
         private DatabaseInteraction _outputDB;
 
@@ -33,6 +33,11 @@ namespace ShakaCoin.Blockchain
             if (!Directory.Exists(OutputsDir))
             {
                 Directory.CreateDirectory(OutputsDir);
+            }
+
+            if (!Directory.Exists(WalletsDir))
+            {
+                Directory.CreateDirectory(WalletsDir);
             }
 
             _outputDB = new DatabaseInteraction(OutputsDir);
@@ -102,5 +107,50 @@ namespace ShakaCoin.Blockchain
         {
             _outputDB.Close();
         }
+
+        public void AddWallet(string name, byte[] pk)
+        {
+            string fName = "w_" + name + ".dat";
+            string fileP = Path.Combine(WalletsDir, fName);
+
+            File.WriteAllBytes(fileP, pk);
+        }
+
+        public byte[] ReadWallet(string name)
+        {
+            string fName = "w_" + name + ".dat";
+            string fileP = Path.Combine(WalletsDir, fName);
+
+            try
+            {
+                return File.ReadAllBytes(fileP);
+            }
+            catch (FileNotFoundException)
+            {
+                
+                
+            }
+
+            return [];
+
+
+        }
+
+        public List<string> GetAllWallets()
+        {
+            string[] ts = Directory.GetFiles(WalletsDir, "*.dat");
+
+            List<string> wltsList = ts.ToList();
+
+            for (int i=0; i < ts.Length; i++)
+            {
+                wltsList[i] = wltsList[i].Replace(WalletsDir+"\\", "");
+                wltsList[i] = wltsList[i].Replace(".dat", "");
+                wltsList[i] = wltsList[i].Substring(2);
+            }
+
+            return wltsList;
+        }
+
     }
 }

@@ -1,4 +1,4 @@
-﻿using ShakaCoin.Cryptography;
+﻿using ShakaCoin.Blockchain;
 using ShakaCoin.PaymentData;
 using System;
 using System.Collections.Generic;

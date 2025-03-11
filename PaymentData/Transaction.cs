@@ -58,7 +58,7 @@ namespace ShakaCoin.PaymentData
             return (ulong)_Fee;
         }
 
-        public byte[] GetBytes() // 140 bytes
+        public byte[] GetBytes()
         {
             // version (1) + inputcount (1) + inputs( n * 97 ) + outputcount (1) + outputs ( n * 40 )
             byte[] TransactionBytes = new byte[3 + 97 * Inputs.Count + 40 * Outputs.Count];

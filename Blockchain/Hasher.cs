@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using System.Security.Cryptography;
 
-namespace ShakaCoin.Cryptography
+namespace ShakaCoin.Blockchain
 {
     public class Hasher
     {
@@ -28,24 +28,24 @@ namespace ShakaCoin.Cryptography
 
         public static byte[] GetBytesQuick(string data)
         {
-            return System.Text.Encoding.UTF8.GetBytes(data);
+            return Encoding.UTF8.GetBytes(data);
         }
 
         public static string GetStringQuick(byte[] data)
         {
-            return System.Text.Encoding.UTF8.GetString(data);
+            return Encoding.UTF8.GetString(data);
         }
 
         public static string GetHexStringQuick(byte[] data)
         {
             return Convert.ToHexString(data);
         }
-        
+
         public static byte[] GetBytesFromHexStringQuick(string data)
         {
             return Convert.FromHexString(data);
         }
- 
-        
+
+
     }
 }

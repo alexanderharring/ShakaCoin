@@ -1,5 +1,4 @@
-﻿using ShakaCoin.Cryptography;
-using ShakaCoin.PaymentData;
+﻿using ShakaCoin.PaymentData;
 using System.Text;
 using ShakaCoin.Networking;
 using System.Collections;
@@ -27,8 +26,13 @@ namespace ShakaCoin
         //}
         static void Main(string[] args)
         {
+            //MainLogic.Initiate();
 
-            Console.WriteLine("Hi");
+
+            FileManagement fm = new FileManagement();
+
+            Console.WriteLine(fm.ReadWallet("exampleWallet").Length);
+
         }
 
     }
