@@ -26,12 +26,7 @@ namespace ShakaCoin
         //}
         static void Main(string[] args)
         {
-            //MainLogic.Initiate();
-
-
-            FileManagement fm = new FileManagement();
-
-            Console.WriteLine(fm.ReadWallet("exampleWallet").Length);
+            MainLogic.Initiate();
 
         }
 

@@ -27,6 +27,13 @@ namespace ShakaCoin
 
         internal static void Initiate()
         {
+            string walletName = GetWalletName();
+
+            Console.WriteLine("Loading Wallet: " + walletName);
+        }
+
+        internal static string GetWalletName()
+        {
 
             FileManagement fm = new FileManagement();
 
@@ -35,20 +42,20 @@ namespace ShakaCoin
 
             bool DoesNotHaveWalletYet = true;
 
-
-
             while (DoesNotHaveWalletYet)
             {
                 ClearScreen();
                 WalletOptions();
 
                 string? line = Console.ReadLine();
+                
                 if ((line != null) && (line.Length > 0))
                 {
 
                     if (line.ToLower()[0] == 'x')
                     {
-                        return;
+                        Environment.Exit(0);
+                        return "";
                     } 
                     
                     else if (line.ToLower()[0] == 'l')
@@ -61,25 +68,39 @@ namespace ShakaCoin
                             Console.WriteLine(w);
                         }
 
-                        Console.WriteLine("Press any key to continue...");
+                        Console.Write("Press any key to continue...");
                         Console.ReadLine();
                     }
 
-                    else if (Console.ReadLine() == "o")
+                    else if (line.ToLower()[0] == 'o')
                     {
                         ClearScreen();
                         Console.WriteLine("Enter wallet name:");
                         string? wltName = Console.ReadLine();
-
+                        
                         if ((wltName != null) && (wltName.Length > 0))
                         {
-                            Console.WriteLine("");
+                            byte[] pk = fm.ReadWallet(wltName);
+
+                            if (pk.Length > 0)
+                            {
+                                return wltName;
+                                
+                            } else
+                            {
+                                Console.Write("Wallet not found.");
+                            }
+                            Console.ReadLine();
                         }
                     }
 
 
                 }
+
+                
             }
+
+            return "";
 
         }
 

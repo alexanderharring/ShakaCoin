@@ -49,4 +49,5 @@ namespace ShakaCoin.Blockchain
             return HomeKeys.VerifyPublicKey(publicKey);
         }
     }
+
 }
