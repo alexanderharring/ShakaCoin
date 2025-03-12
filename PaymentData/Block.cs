@@ -45,10 +45,15 @@ namespace ShakaCoin.PaymentData
         {
             Transactions.Add(newTx);
 
-            foreach (Output ox in newTx.Outputs)
-            {
-                outputBF.AddItem(ox.ExportToBytes());
+            if (!(newTx.IsCoinbase())) {
+
+                foreach (Output ox in newTx.Outputs)
+                {
+                    outputBF.AddItem(ox.ExportToBytes());
+                }
             }
+
+
         }
 
         public void OverWriteIncrement()

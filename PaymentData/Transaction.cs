@@ -82,7 +82,11 @@ namespace ShakaCoin.PaymentData
 
             return TransactionBytes;
 
+        }
 
+        public bool IsCoinbase()
+        {
+            return ((Version & 128) != 0);
         }
 
     }

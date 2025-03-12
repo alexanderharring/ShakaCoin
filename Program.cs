@@ -5,6 +5,7 @@ using System.Collections;
 using System.Net;
 using ShakaCoin.Blockchain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace ShakaCoin
 {
@@ -26,8 +27,12 @@ namespace ShakaCoin
         //}
         static void Main(string[] args)
         {
-            var m = new MainLogic();
+            //var m = new MainLogic();
 
+
+            byte num = 0b01010000;
+
+            Console.WriteLine(num & 128);
 
         }
 

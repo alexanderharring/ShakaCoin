@@ -36,6 +36,11 @@ namespace ShakaCoin.PaymentData
             return Wallet.VerifySignature(Signature, Outpoint, pk);
         }
 
+        public bool IsCoinbase()
+        {
+            return ((TransactionID == new byte[32]) && (OutputIndex == 255));
+        }
+
         public byte[] GetBytes() // 97 bytes
         {
             // TXID (32) + Oind (1) + Sig (64)
