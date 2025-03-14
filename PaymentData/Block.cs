@@ -11,7 +11,7 @@ namespace ShakaCoin.PaymentData
 {
     public class Block
     {
-        public byte[] PreviousBlockHash = new byte[32];
+        public byte[] PreviousBlockHash;
 
         public byte[] MerkleRoot = new byte[32];
 

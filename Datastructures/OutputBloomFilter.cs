@@ -10,25 +10,30 @@ namespace ShakaCoin.Datastructures
 {
     public class OutputBloomFilter : IBloomFilter
     {
-        public int Size => 512;
-        public int HashFunctions => 4;
+        public int Size => 512*2;
+        public int HashFunctions => 3;
         public BitArray BitArray { get; set; }
 
         public OutputBloomFilter()
         {
-            BitArray = new BitArray(512);
+            BitArray = new BitArray(Size);
         }
 
-        public ushort GetHashIndex(byte[] data)
+        public static int GetHashIndexStatic(byte[] data, int Size)
         {
             byte[] hashed = Hasher.Hash256(data);
 
             ushort lastTwo = BitConverter.ToUInt16(hashed, hashed.Length - 2);
 
-            ushort extract = (ushort)(lastTwo & 0x1FF);
+            int extract = (lastTwo & (Size - 1));
 
             return extract;
-            
+        }
+
+        public int GetHashIndex(byte[] data)
+        {
+            return GetHashIndexStatic(data, Size);
+   
         }
 
 
@@ -39,7 +44,7 @@ namespace ShakaCoin.Datastructures
             byte[] newData = new byte[mainLength + 1];
             Array.Copy(data, newData, mainLength);
  
-            for (int i=1; i < 5; i++)
+            for (int i=1; i < (1+HashFunctions); i++)
             {
                 newData[mainLength] = (byte)i;
                 BitArray[GetHashIndex(newData)] = true;
@@ -59,7 +64,7 @@ namespace ShakaCoin.Datastructures
             byte[] newData = new byte[mainLength + 1];
             Array.Copy(data, newData, mainLength);
 
-            for (int i = 1; i < 5; i++)
+            for (int i = 1; i < (1 + HashFunctions); i++)
             {
                 newData[mainLength] = (byte)i;
                 if (!BitArray[GetHashIndex(newData)]){

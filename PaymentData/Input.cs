@@ -38,7 +38,7 @@ namespace ShakaCoin.PaymentData
 
         public bool IsCoinbase()
         {
-            return ((TransactionID == new byte[32]) && (OutputIndex == 255));
+            return ((Hasher.GetHexStringQuick(TransactionID) == Hasher.GetHexStringQuick(new byte[32])) && (OutputIndex == 255));
         }
 
         public byte[] GetBytes() // 97 bytes

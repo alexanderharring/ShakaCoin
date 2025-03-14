@@ -7,13 +7,13 @@ using ShakaCoin.PaymentData;
 
 namespace ShakaCoin.Datastructures
 {
-    internal class TXNodeAVL: INodeAVL<Transaction>, IComparable<TXNodeAVL>
+    public class TXNodeAVL: INodeAVL<Transaction>, IComparable<TXNodeAVL>
     {
         
         public int Height { get; set; }
         public Transaction Value { get; set; }
-        public TXNodeAVL? Left {  get; set; }
-        public TXNodeAVL? Right {  get; set; }
+        public TXNodeAVL? Left;
+        public TXNodeAVL? Right;
 
         public TXNodeAVL(Transaction val)
         {
@@ -22,33 +22,45 @@ namespace ShakaCoin.Datastructures
 
         public void Insert(Transaction val)
         {
-
+            this.Insert(new TXNodeAVL(val));
         }
 
-        public void Delete(Transaction val)
+        public bool Delete(Transaction val)
         {
-
+            return Remove(new TXNodeAVL(val), out Left);
         }
 
         public bool Contains(Transaction val)
         {
-            return false;
+            return Contains(new TXNodeAVL(val));
         }
 
-        public int CalcualteBF()
+        public bool Contains(TXNodeAVL val)
         {
-            return 0;
+            if (val < this)
+            {
+                return (Left?.Contains(val) ?? false);
+            } else if (val > this)
+            {
+                return (Right?.Contains(val) ?? false);
+            } else if (val == this)
+            {
+                return true;
+            } else
+            {
+                return false;
+            }
         }
 
         public int CompareTo(TXNodeAVL? other)
         {
-            if (other == null)
+            if (other is null)
             {
                 return 1;
             }
 
-            ulong f1 = Value.CalculateFee();
-            ulong f2 = other.Value.CalculateFee();
+            double f1 = Value.CalculateFeeRate();
+            double f2 = other.Value.CalculateFeeRate();
 
             if (f1 == f2)
             {
@@ -67,7 +79,7 @@ namespace ShakaCoin.Datastructures
         {
             if (insertNode < this)
             {
-                if (Left != null)
+                if (!(Left is null))
                 {
                     Left.Insert(insertNode);
                 } else
@@ -78,7 +90,7 @@ namespace ShakaCoin.Datastructures
                 
             } else //putting equal values right instead of doing some sort of like duplicate counter or linked list thingy
             {
-                if (Right != null)
+                if (!(Right is null))
                 {
                     Right.Insert(insertNode);
                 }
@@ -88,7 +100,92 @@ namespace ShakaCoin.Datastructures
                 }
             }
 
-            
+            UpdateHeight();
+            Balance();
+        }
+
+        private void Swap(TXNodeAVL other)
+        {
+            Transaction tempTX = other.Value;
+
+            other.Value = this.Value;
+            this.Value = tempTX;
+        }
+
+        private void RightRight()
+        {
+            if (Left is null)
+            {
+                throw new InvalidOperationException("no left :(");
+            }
+
+
+            this.Swap(Left);
+
+            TXNodeAVL oldRight = Right;
+            Right = Left;
+            Left = Right.Left;
+            Right.Left = Right.Right;
+            Right.Right = oldRight;
+
+            Right.UpdateHeight();
+            UpdateHeight();
+        }
+
+        private void LeftLeft()
+        {
+            if (Right is null)
+            {
+                throw new InvalidOperationException("no right :(");
+            }
+
+
+            this.Swap(Right);
+
+            TXNodeAVL oldLeft = Left;
+            Left = Right;
+            Right = Left.Right;
+            Left.Right = Left.Left;
+            Left.Left = oldLeft;
+
+            Left.UpdateHeight();
+            UpdateHeight();
+        }
+
+        private void UpdateHeight()
+        {
+            Height = 1 + Math.Max(Left?.Height ?? -1, Right?.Height ?? -1);
+        }
+
+        private int GetBalance()
+        {
+            return (Right?.Height ?? 0 )-(Left?.Height ?? 0);
+        }
+
+        private void Balance()
+        {
+            int bf = GetBalance();
+
+            Console.WriteLine(bf);
+
+            if (bf > -1)
+            {
+                if (Left?.GetBalance() == 1)
+                {
+                    Left.LeftLeft();
+                }
+
+                RightRight();
+
+            } 
+            else if (bf > 1)
+            {
+                if (Right?.GetBalance() == -1)
+                {
+                    Right.RightRight();
+                }
+                LeftLeft();
+            }
         }
 
         public static bool operator >(TXNodeAVL a1, TXNodeAVL a2)
@@ -109,6 +206,72 @@ namespace ShakaCoin.Datastructures
         public static bool operator !=(TXNodeAVL a1, TXNodeAVL a2)
         {
             return a1.CompareTo(a2) != 0;
+        }
+
+        public override bool Equals(Object? obj)
+        {
+            var item = obj as TXNodeAVL;
+            if (item is null)
+            {
+                return false;
+            }
+            else
+            {
+                return this.Value == item.Value;
+            }
+            
+        }
+
+        private TXNodeAVL Max()
+        {
+            if (Right is null)
+            {
+                return this;
+            } else
+            {
+                return Right.Max();
+            }
+        }
+
+        public bool Remove(TXNodeAVL node, out TXNodeAVL? _root)
+        {
+            bool didRemove;
+
+            if (node < this)
+            {
+                _root = this;
+                didRemove = Left?.Remove(node, out Left) ?? false;
+            }
+            else if (node > this)
+            {
+                _root = this;
+                didRemove = Right?.Remove(node, out Right) ?? false;
+            }
+
+            else if ((Left is null) || (Right is null))
+            {
+                _root = Left ?? Right;
+                didRemove = true;
+            } else
+            {
+                TXNodeAVL lMax = Left.Max();
+
+                Left.Remove(new TXNodeAVL(lMax.Value), out Left);
+                Value = lMax.Value;
+
+                _root = this;
+                didRemove = true;
+            }
+
+            _root?.UpdateHeight();
+            _root?.Balance();
+
+            return didRemove;
+        }
+
+        public override int GetHashCode()
+        {
+            return OutputBloomFilter.GetHashIndexStatic(Value.GetBytes(), int.MaxValue);
         }
     }
 }

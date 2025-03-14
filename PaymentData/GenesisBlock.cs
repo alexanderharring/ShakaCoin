@@ -10,11 +10,12 @@ namespace ShakaCoin.PaymentData
 {
     internal class GenesisBlock
     {
-        internal string pubKey = "3F804A90169864F10F66D7F9D176754F0B1A6EA539443FADA2D759878BA141D1";
 
-        internal GenesisBlock()
+        public static Block MakeGenesisBlock()
         {
             Block gBlock = new Block();
+
+            string pubKey = "3F804A90169864F10F66D7F9D176754F0B1A6EA539443FADA2D759878BA141D1";
 
             byte version = 0b10000000; // coinbase transaction
 
@@ -39,6 +40,7 @@ namespace ShakaCoin.PaymentData
             gBlock.AddTransaction(gTransaction);
 
 
+            return gBlock;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace ShakaCoin.Datastructures
         T Value { get; }
         int Height { get; }
         void Insert(T value);
-        void Delete(T value);
+        bool Delete(T value);
         bool Contains(T value);
 
     }

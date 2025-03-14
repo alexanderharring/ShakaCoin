@@ -19,6 +19,8 @@ namespace ShakaCoin.PaymentData
 
         private ulong? _Fee;
 
+        private double? _FeeRate;
+
         public Transaction(byte version) 
         {
             Version = version;
@@ -32,6 +34,18 @@ namespace ShakaCoin.PaymentData
         public void AddOutput(Output newOutput)
         {
             Outputs.Add(newOutput);
+        }
+
+        public double CalculateFeeRate()
+        {
+            if (_FeeRate != null)
+            {
+                return (double)_FeeRate;
+            } else
+            {
+                CalculateFee();
+                return (double)_FeeRate;
+            }
         }
 
         public ulong CalculateFee()
@@ -54,6 +68,8 @@ namespace ShakaCoin.PaymentData
             }
 
             _Fee = feeSum;
+
+            _FeeRate = (double)feeSum / GetBytes().Length;
 
             return (ulong)_Fee;
         }
@@ -83,6 +99,7 @@ namespace ShakaCoin.PaymentData
             return TransactionBytes;
 
         }
+
 
         public bool IsCoinbase()
         {
