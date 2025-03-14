@@ -96,11 +96,13 @@ namespace ShakaCoin.Datastructures
                 }
                 else
                 {
+                    
                     Right = insertNode;
                 }
             }
 
             UpdateHeight();
+
             Balance();
         }
 
@@ -159,17 +161,16 @@ namespace ShakaCoin.Datastructures
 
         private int GetBalance()
         {
-            return (Right?.Height ?? 0 )-(Left?.Height ?? 0);
+            return (Right?.Height ?? -1 )-(Left?.Height ?? -1);
         }
 
         private void Balance()
         {
             int bf = GetBalance();
 
-            Console.WriteLine(bf);
-
-            if (bf > -1)
+            if (bf < -1)
             {
+
                 if (Left?.GetBalance() == 1)
                 {
                     Left.LeftLeft();
@@ -273,5 +274,100 @@ namespace ShakaCoin.Datastructures
         {
             return OutputBloomFilter.GetHashIndexStatic(Value.GetBytes(), int.MaxValue);
         }
+
+        public void ReverseInOrder()
+        {
+            if (!(Right is null))
+            {
+                Right.ReverseInOrder();
+            }
+            
+            Console.WriteLine(Math.Round(Value.CalculateFeeRate(), 1));
+
+            if (!(Left is null))
+            {
+                Left.ReverseInOrder();
+            }
+        }
+
+        private int GetMaxWidth()
+        {
+            return 1 + Math.Max(Left?.GetMaxWidth() ?? 0, Right?.GetMaxWidth() ?? 0);
+        }
+
+        public void PrintTree(string indent, bool isRight)
+        {
+
+            Console.Write(indent);
+
+            if (isRight)
+            {
+                Console.Write("R--");
+                indent += "   ";
+
+            } else
+
+            {
+                Console.Write("L--");
+                indent += "|  ";
+            }
+            Console.WriteLine(Math.Round(this.Value.CalculateFeeRate(), 1));
+
+            if (!(Right is null))
+            {
+                Right.PrintTree(indent, true);
+            }
+
+            if (!(Left is null)){
+
+                Left.PrintTree(indent, false);
+            }
+        }
+
+        public void LevelOrderTraversal()
+        {
+            List<TXNodeAVL> ls = new List<TXNodeAVL>();
+
+            List<double[]> 
+
+            ls.Add(this);
+
+            int mw = this.GetMaxWidth();
+            int level = 0;
+
+            while (ls.Count > 0)
+            {
+                int levelS = ls.Count;
+
+                int spaceBefore = (int)Math.Pow(2, mw - level);
+
+                Console.Write(new string(' ',  spaceBefore * 2));
+
+                for (int t = 0; t < levelS; t++)
+                {
+                    TXNodeAVL v = ls[0];
+                    ls.RemoveAt(0);
+
+                    Console.Write(Math.Round(v.Value.CalculateFeeRate(), 1).ToString() + " ");
+
+                    if (!(v.Left is null))
+                    {
+                        ls.Add(v.Left);
+                    }
+
+                    if (!(v.Right is null))
+                    {
+                        ls.Add(v.Right);
+                    }
+
+                    Console.Write(new string(' ', spaceBefore * 4 - 1));
+                }
+
+                level++;
+                Console.WriteLine("");
+                
+            }
+        }
+
     }
 }

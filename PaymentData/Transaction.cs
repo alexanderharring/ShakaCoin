@@ -64,7 +64,7 @@ namespace ShakaCoin.PaymentData
 
             foreach (Output outpt in Outputs)
             {
-                feeSum -= outpt.Amount;
+                feeSum += outpt.Amount;
             }
 
             _Fee = feeSum;

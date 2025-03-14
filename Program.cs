@@ -27,11 +27,11 @@ namespace ShakaCoin
 
         //}
 
-        public static Transaction generateTransaction()
+        public static Transaction generateTransaction(int i)
         {
             Transaction tx = new Transaction(0x00);
             Random rnd = new Random();
-            int n = rnd.Next(int.MaxValue/2, int.MaxValue);
+            int n = rnd.Next(0, i);
             tx.AddOutput(new Output((ulong)n, Hasher.Hash256(Hasher.GetBytesQuick(n.ToString()))));
             return tx;
         }
@@ -40,22 +40,29 @@ namespace ShakaCoin
         {
             //var m = new MainLogic();
 
-            TXNodeAVL root = new TXNodeAVL(generateTransaction());
+            TXNodeAVL root = new TXNodeAVL(generateTransaction(43));
 
             Transaction tx42 = new Transaction(0x00);
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 5; i < 15; i++)
             {
-                Transaction tx = generateTransaction();
+                Transaction tx = generateTransaction(i*43);
                 if (i == 42)
                 {
                     tx42 = tx;
+
                 }
 
                 root.Insert(tx);
             }
 
+            root.LevelOrderTraversal();
 
+
+            Console.WriteLine("");
+            Console.WriteLine("");
+
+            root.ReverseInOrder();
 
         }
 
