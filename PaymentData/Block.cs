@@ -27,7 +27,7 @@ namespace ShakaCoin.PaymentData
 
         public ushort TransactionCount;
 
-        public List<Transaction> Transactions = new List<Transaction>();
+        private TXNodeAVL _TXroot;
 
         public byte[] BlockHeader = new byte[209];
 
@@ -43,7 +43,7 @@ namespace ShakaCoin.PaymentData
 
         public void AddTransaction(Transaction newTx)
         {
-            Transactions.Add(newTx);
+            _TXroot.Insert(newTx);
 
             if (!(newTx.IsCoinbase())) {
 

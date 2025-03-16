@@ -124,7 +124,7 @@ namespace ShakaCoin.Datastructures
 
             this.Swap(Left);
 
-            TXNodeAVL oldRight = Right;
+            TXNodeAVL? oldRight = Right;
             Right = Left;
             Left = Right.Left;
             Right.Left = Right.Right;
@@ -144,7 +144,7 @@ namespace ShakaCoin.Datastructures
 
             this.Swap(Right);
 
-            TXNodeAVL oldLeft = Left;
+            TXNodeAVL? oldLeft = Left;
             Left = Right;
             Right = Left.Right;
             Left.Right = Left.Left;
@@ -275,6 +275,11 @@ namespace ShakaCoin.Datastructures
             return OutputBloomFilter.GetHashIndexStatic(Value.GetBytes(), int.MaxValue);
         }
 
+        public void GetNBytesOfTransactions(int N)
+        {
+
+        }
+
         public void ReverseInOrder()
         {
             if (!(Right is null))
@@ -326,11 +331,9 @@ namespace ShakaCoin.Datastructures
 
         public void LevelOrderTraversal()
         {
-            List<TXNodeAVL> ls = new List<TXNodeAVL>();
+            List<(TXNodeAVL, int)> ls = new List<(TXNodeAVL, int)>();
 
-            List<double[]> 
-
-            ls.Add(this);
+            ls.Add((this, 0));
 
             int mw = this.GetMaxWidth();
             int level = 0;
@@ -339,33 +342,34 @@ namespace ShakaCoin.Datastructures
             {
                 int levelS = ls.Count;
 
-                int spaceBefore = (int)Math.Pow(2, mw - level);
-
-                Console.Write(new string(' ',  spaceBefore * 2));
+                string[] lp = Enumerable.Repeat(" ", (int)Math.Pow(2, this.Height)).ToArray();
 
                 for (int t = 0; t < levelS; t++)
                 {
-                    TXNodeAVL v = ls[0];
+                    (TXNodeAVL, int) v = ls[0];
                     ls.RemoveAt(0);
 
-                    Console.Write(Math.Round(v.Value.CalculateFeeRate(), 1).ToString() + " ");
 
-                    if (!(v.Left is null))
+                    lp[v.Item2] = Math.Round(v.Item1.Value.CalculateFeeRate(), 1).ToString();
+
+                     
+                    if (!(v.Item1.Left is null))
                     {
-                        ls.Add(v.Left);
+                        ls.Add((v.Item1.Left, 2*v.Item2));
                     }
 
-                    if (!(v.Right is null))
+                    if (!(v.Item1.Right is null))
                     {
-                        ls.Add(v.Right);
+                        ls.Add((v.Item1.Right, 2 * v.Item2 + 1));
                     }
 
-                    Console.Write(new string(' ', spaceBefore * 4 - 1));
+
                 }
 
                 level++;
+                Console.WriteLine(String.Join(" ", lp));
                 Console.WriteLine("");
-                
+
             }
         }
 
