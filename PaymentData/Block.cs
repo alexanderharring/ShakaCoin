@@ -36,9 +36,13 @@ namespace ShakaCoin.PaymentData
 
         private ulong? _feeSum;
 
+        public MerkleNode MerkleRootNode;
+
         public Block()
         {
             outputBF = new OutputBloomFilter();
+
+            TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds()
             
         }
 
@@ -114,24 +118,33 @@ namespace ShakaCoin.PaymentData
         {
             List<Transaction> merkleList = new List<Transaction>(Transactions);
 
-            List<Transaction> secondList = new List<Transaction>();
+            Queue<MerkleNode> txQueue = new Queue<MerkleNode>();
 
-            while (merkleList.Count > 1)
+            foreach (Transaction tx in merkleList)
             {
-                if ((merkleList.Count % 2) == 1)
-                {
-                    merkleList.Add(merkleList[merkleList.Count - 1]);
-                }
-
-                for (int i = 1; i < merkleList.Count; i++)
-                {
-                    if ((i%2) == 1)
-                    {
-                        secondList.Add(Hasher.Hash256(merkleList[i].GetBytes()));
-                    }
-                }
+                txQueue.Enqueue(new MerkleNode(Hasher.Hash256(tx.GetBytes())));
             }
 
+            
+
+            while (txQueue.Count > 1)
+            {
+                MerkleNode mNode = txQueue.Dequeue();
+                MerkleNode? mNode0;
+                if (txQueue.Count == 0)
+                {
+                    mNode0 = new MerkleNode();
+                }
+                else
+                {
+                     mNode0 = txQueue.Dequeue();
+                }
+
+                txQueue.Enqueue(new MerkleNode(mNode, mNode0));
+
+            }
+
+            MerkleRootNode = txQueue.Dequeue();
 
         }
 

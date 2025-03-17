@@ -36,9 +36,19 @@ namespace ShakaCoin
             return tx;
         }
 
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
-           
+            Block newBlock = new Block();
+
+            for (int i = 0; i < 8; i++)
+            {
+                newBlock.AddTransaction(generateTransaction());
+            }
+
+            newBlock.GenerateMerkleRoot();
+
+
+            newBlock.MerkleRootNode.LevelOrderPrint();
         }
 
     }
