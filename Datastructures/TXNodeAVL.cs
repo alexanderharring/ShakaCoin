@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using ShakaCoin.Blockchain;
 using ShakaCoin.PaymentData;
 
 namespace ShakaCoin.Datastructures
@@ -275,8 +277,65 @@ namespace ShakaCoin.Datastructures
             return OutputBloomFilter.GetHashIndexStatic(Value.GetBytes(), int.MaxValue);
         }
 
-        public void GetNBytesOfTransactions(int N)
+        public List<Transaction> GetNBytesOfTransactions(int N)
         {
+            List<Transaction> txList = new List<Transaction>();
+            this.TraulTransactionsReverse(txList, 0, N);
+
+            return txList;
+
+        }
+
+        public List<Transaction> GetAllTransactions()
+        {
+            List<Transaction> txl = new List<Transaction>();
+            this.TraulAllTx(txl);
+
+            return txl;
+        }
+
+        private void TraulAllTx(List<Transaction> txL)
+        {
+            if (!(Right is null))
+            {
+                Right.ReverseInOrder();
+            }
+
+            txL.Add(Value);
+
+            if (!(Left is null))
+            {
+                Left.ReverseInOrder();
+            }
+        }
+        private void TraulTransactionsReverse(List<Transaction> txList, int bCount, int mCount)
+        {
+            if (bCount >= mCount)
+            {
+                return;
+            }
+
+            if (!(Right is null))
+            {
+                Right.TraulTransactionsReverse(txList, bCount, mCount);
+            }
+
+            int dL = Value.GetBytes().Length;
+            if (bCount + dL < mCount)
+            {
+                txList.Add(Value);
+                bCount += dL;
+            } else
+            {
+                return;
+            }
+
+
+
+            if (!(Left is null))
+            {
+                Left.TraulTransactionsReverse(txList, bCount, mCount);
+            }
 
         }
 
@@ -302,7 +361,7 @@ namespace ShakaCoin.Datastructures
 
         public void PrintTree(string indent, bool isRight)
         {
-
+             
             Console.Write(indent);
 
             if (isRight)

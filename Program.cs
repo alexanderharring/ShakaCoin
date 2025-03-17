@@ -27,9 +27,18 @@ namespace ShakaCoin
 
         //}
 
-        static void Main(string[] args)
+        private static Transaction generateTransaction()
         {
+            Transaction tx = new Transaction(0x00);
+            Random rnd = new Random();
+            int n = rnd.Next(0, int.MaxValue / 2);
+            tx.AddOutput(new Output((ulong)n, Hasher.Hash256(Hasher.GetBytesQuick(n.ToString()))));
+            return tx;
+        }
 
+        static async Task Main(string[] args)
+        {
+           
         }
 
     }

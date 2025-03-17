@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using ShakaCoin.Datastructures;
+using ShakaCoin.Blockchain;
 
 namespace ShakaCoin.PaymentData
 {
@@ -27,7 +28,7 @@ namespace ShakaCoin.PaymentData
 
         public ushort TransactionCount;
 
-        private TXNodeAVL _TXroot;
+        public List<Transaction> Transactions = new List<Transaction>();
 
         public byte[] BlockHeader = new byte[209];
 
@@ -43,7 +44,7 @@ namespace ShakaCoin.PaymentData
 
         public void AddTransaction(Transaction newTx)
         {
-            _TXroot.Insert(newTx);
+            Transactions.Add(newTx);
 
             if (!(newTx.IsCoinbase())) {
 
@@ -60,7 +61,7 @@ namespace ShakaCoin.PaymentData
         {
             byte[] miningIncBytes = BitConverter.GetBytes(MiningIncrement);
 
-            Array.Copy(Target, 0, BlockHeader, 205, 4);
+            Array.Copy(miningIncBytes, 0, BlockHeader, 205, 4);
         }
 
         public void SetHeader() {
@@ -109,7 +110,35 @@ namespace ShakaCoin.PaymentData
             return [];
         }
 
+        public void GenerateMerkleRoot()
+        {
+            List<Transaction> merkleList = new List<Transaction>(Transactions);
 
+            List<Transaction> secondList = new List<Transaction>();
+
+            while (merkleList.Count > 1)
+            {
+                if ((merkleList.Count % 2) == 1)
+                {
+                    merkleList.Add(merkleList[merkleList.Count - 1]);
+                }
+
+                for (int i = 1; i < merkleList.Count; i++)
+                {
+                    if ((i%2) == 1)
+                    {
+                        secondList.Add(Hasher.Hash256(merkleList[i].GetBytes()));
+                    }
+                }
+            }
+
+
+        }
+
+        public byte[] HashBlockHeader()
+        {
+            return Hasher.Hash256(BlockHeader);
+        }
 
     }
 }
