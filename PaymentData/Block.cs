@@ -12,7 +12,7 @@ namespace ShakaCoin.PaymentData
 {
     public class Block
     {
-        public byte[] PreviousBlockHash;
+        public byte[] PreviousBlockHash = new byte[32];
 
         public byte[] MerkleRoot = new byte[32];
 
@@ -22,7 +22,7 @@ namespace ShakaCoin.PaymentData
 
         public long TimeStamp;
 
-        public uint MiningIncrement = 0;
+        public ulong MiningIncrement = 0;
 
         public byte[] Target = new byte[32];
 
@@ -30,19 +30,21 @@ namespace ShakaCoin.PaymentData
 
         public List<Transaction> Transactions = new List<Transaction>();
 
-        public byte[] BlockHeader = new byte[209];
+        public byte[] BlockHeader = new byte[117];
 
         public OutputBloomFilter outputBF;
 
         private ulong? _feeSum;
 
-        public MerkleNode MerkleRootNode;
+        public MerkleNode? MerkleRootNode;
 
-        public Block()
+        public int? BlockSize;
+
+        public Block(uint bHeight)
         {
             outputBF = new OutputBloomFilter();
 
-            TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds()
+            BlockHeight = bHeight;
             
         }
 
@@ -65,13 +67,13 @@ namespace ShakaCoin.PaymentData
         {
             byte[] miningIncBytes = BitConverter.GetBytes(MiningIncrement);
 
-            Array.Copy(miningIncBytes, 0, BlockHeader, 205, 4);
+            Array.Copy(miningIncBytes, 0, BlockHeader, 109, 8);
         }
 
         public void SetHeader() {
 
-            // order -> height (4) + version (1) + timestamp (8) + prev hash (64) + merkle root (64) + target ( 64 ) + mining increment (4)
-            byte[] headerBuild = new byte[209]; //209 is the sum of the prev block hash, merkle root .. target
+            // order -> height (4) + version (1) + timestamp (8) + prev hash (32) + merkle root (32) + target ( 32 ) + mining increment (8)
+            byte[] headerBuild = new byte[117];
 
             byte[] heightBytes = BitConverter.GetBytes(BlockHeight);
 
@@ -82,12 +84,12 @@ namespace ShakaCoin.PaymentData
             byte[] timeBytes = BitConverter.GetBytes(TimeStamp);
             Array.Copy(timeBytes, 0, headerBuild, 5, 8);
 
-            Array.Copy(PreviousBlockHash, 0, headerBuild, 13, 64);
-            Array.Copy(MerkleRoot, 0, headerBuild, 77, 64);
-            Array.Copy(Target, 0, headerBuild, 141, 64);
+            Array.Copy(PreviousBlockHash, 0, headerBuild, 13, 32);
+            Array.Copy(MerkleRoot, 0, headerBuild, 45, 32);
+            Array.Copy(Target, 0, headerBuild, 77, 32);
 
             byte[] miningIncBytes = BitConverter.GetBytes(MiningIncrement);
-            Array.Copy(Target, 0, headerBuild, 205, 4);
+            Array.Copy(Target, 0, headerBuild, 109, 8);
 
             BlockHeader = headerBuild;
         }
@@ -109,9 +111,37 @@ namespace ShakaCoin.PaymentData
             return (ulong)_feeSum;
         }
 
-        public byte[] GetBytes()
+        public byte[] GetBlockBytes()
         {
-            return [];
+            if (BlockSize is null)
+            {
+                BlockSize = 119;
+                foreach (Transaction tx in Transactions)
+                {
+                    BlockSize += tx.GetBytes().Length;
+                }
+
+            }
+            byte[] blockBytes = new byte[(int)BlockSize];
+
+            SetHeader();
+            Buffer.BlockCopy(BlockHeader, 0, blockBytes, 0, 117);
+
+            TransactionCount = (ushort)Transactions.Count;
+            Buffer.BlockCopy(BitConverter.GetBytes(TransactionCount), 0, blockBytes, 117, 2);
+
+            int offset = 0;
+
+            for (int i = 0; i < TransactionCount; i++)
+            {
+                byte[] thisTx = Transactions[i].GetBytes();
+                ushort TxSize = (ushort)thisTx.Length; // the maximum size of a transaction is about 34kB which fits inside of a ushort
+                Buffer.BlockCopy(BitConverter.GetBytes(TxSize), 0, blockBytes, 119 + offset, 2);
+                Buffer.BlockCopy(thisTx, 0, blockBytes, 121 + offset, thisTx.Length);
+                offset += (thisTx.Length + 2);
+            }
+
+            return blockBytes;
         }
 
         public void GenerateMerkleRoot()
@@ -148,7 +178,7 @@ namespace ShakaCoin.PaymentData
 
         }
 
-        public byte[] HashBlockHeader()
+        public byte[] GetBlockHash()
         {
             return Hasher.Hash256(BlockHeader);
         }

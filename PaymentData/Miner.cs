@@ -16,7 +16,7 @@ namespace ShakaCoin.PaymentData
 
         public Miner()
         {
-            _candidateBlock = new Block();
+            _candidateBlock = new Block(0);
         }
 
         public async Task StartMining()

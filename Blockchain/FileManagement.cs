@@ -72,10 +72,11 @@ namespace ShakaCoin.Blockchain
             }
         }
 
-        public byte[] ReadBlock(uint height)
+        public static byte[]? ReadBlock(uint height)
         {
             string fName = "b" + height.ToString() + ".dat";
             string fileP = Path.Combine(BlockDir, fName);
+
 
             try
             {
@@ -83,10 +84,10 @@ namespace ShakaCoin.Blockchain
             }
             catch (FileNotFoundException)
             {
-
+                return null;
             }
 
-            return [];
+            
 
         }
 

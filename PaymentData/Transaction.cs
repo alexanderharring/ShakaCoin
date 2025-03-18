@@ -85,7 +85,7 @@ namespace ShakaCoin.PaymentData
             for (int i = 0; i < Inputs.Count; i++)
             {
                 int startingInd = 2 + i * 97;
-                Buffer.BlockCopy(Inputs[i].GetBytes(), 0, TransactionBytes, 0, 97);
+                Buffer.BlockCopy(Inputs[i].GetBytes(), 0, TransactionBytes, startingInd, 97);
             }
 
             TransactionBytes[2 + 97 * Inputs.Count] = (byte)Outputs.Count;
@@ -93,7 +93,7 @@ namespace ShakaCoin.PaymentData
             for (int i = 0; i < Outputs.Count; i++)
             {
                 int startingInd = 3 + 97 * Inputs.Count + i * 40;
-                Buffer.BlockCopy(Outputs[i].ExportToBytes(), 0, TransactionBytes, 0, 40);
+                Buffer.BlockCopy(Outputs[i].ExportToBytes(), 0, TransactionBytes, startingInd, 40);
             }
 
             return TransactionBytes;
