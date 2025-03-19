@@ -31,15 +31,23 @@ namespace ShakaCoin.Datastructures
         {
             _isLeaf = false;
 
+            if (Hasher.IsByteArrayLarger(_Right.Hash, _Left.Hash))
+            {
+                Right = _Right;
+                Left = _Left;
+            } else
+            {
+                Right = _Left;
+                Left = _Right;
+            }
+
             byte[] bigArray = new byte[64];
 
-            Buffer.BlockCopy(_Left.Hash, 0, bigArray, 0, 32);
-            Buffer.BlockCopy(_Right.Hash, 0, bigArray, 32, 32);
+            Buffer.BlockCopy(Left.Hash, 0, bigArray, 0, 32);
+            Buffer.BlockCopy(Right.Hash, 0, bigArray, 32, 32);
 
             Hash = Hasher.Hash256(bigArray);
 
-            Left = _Left;
-            Right = _Right;
         }
 
         public void LevelOrderPrint()

@@ -39,20 +39,9 @@ namespace ShakaCoin
         static void Main(string[] args)
         {
 
-            Block nb = new Block();
 
-            for (int i=0; i<100; i++)
-            {
-                nb.AddTransaction(generateTransaction());
-            }
 
-            WorkingBlock wb = new WorkingBlock(nb);
 
-            wb.GenerateMerkleRoot();
-
-            byte[] ab = wb.GenerateMerkleProof(wb.Transactions[42]);
-
-            Console.WriteLine(ab.Length);
         }
 
     }

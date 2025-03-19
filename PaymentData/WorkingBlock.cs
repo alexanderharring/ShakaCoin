@@ -29,6 +29,7 @@ namespace ShakaCoin.PaymentData
             MerkleRoot = blck.MerkleRoot;
             Target = blck.Target;
             MiningIncrement = blck.MiningIncrement;
+            Transactions = blck.Transactions;
 
             outputBF = new OutputBloomFilter();
         }
@@ -94,7 +95,9 @@ namespace ShakaCoin.PaymentData
 
             }
 
+
             MerkleRootNode = txQueue.Dequeue();
+            MerkleRoot = MerkleRootNode.Hash;
 
         }
 
@@ -108,6 +111,7 @@ namespace ShakaCoin.PaymentData
                 }
             }
 
+
             if (!(mx.Left is null))
             {
                 path.Push(mx.Left);
@@ -115,8 +119,9 @@ namespace ShakaCoin.PaymentData
                 {
                     return true;
                 }
+                path.Pop();
             }
-            path.Pop();
+            
 
             if (!(mx.Right is null))
             {
@@ -125,25 +130,61 @@ namespace ShakaCoin.PaymentData
                 {
                     return true;
                 }
+                path.Pop();
             }
-            path.Pop();
-
+            
             return false;
 
         }
 
-        public byte[] GenerateMerkleProof(Transaction tx)
+        public byte[][] GenerateMerkleProof(Transaction tx)
         {
+            if (MerkleRootNode is null)
+            {
+                GenerateMerkleRoot();
+
+            }
             string searchTx = Hasher.GetHexStringQuick(Hasher.Hash256(tx.GetBytes()));
 
             Stack<MerkleNode> pth = new Stack<MerkleNode>();
 
             bool res = Traverse(MerkleRootNode, searchTx, pth);
 
-            Console.WriteLine(pth.Count);
+            byte[][] output = new byte[pth.Count][];
+            for (int i = 0; i < pth.Count; i++)
+            {
 
-            return new byte[8];
-            
+                output[i] = pth.ElementAt(pth.Count - 1 - i).Hash;
+            }
+
+            List<MerkleNode> siblings = new List<MerkleNode>();
+
+            MerkleNode? Traversal = MerkleRootNode;
+
+            for (int i = 0; i < output.Length; i++)
+            {
+                if (Hasher.AreTheSame(Traversal.Left.Hash, output[i]))
+                {
+                    siblings.Add(Traversal.Right);
+                    Traversal = Traversal.Left;
+                } else
+                {
+                    siblings.Add(Traversal.Left);
+                    Traversal = Traversal.Right;
+                }
+            }
+
+            byte[][] ox2 = new byte[pth.Count][];
+            for (int i = 0; i < output.Length; i++)
+            {
+                ox2[output.Length - 1 - i] = siblings[i].Hash;
+            }
+
+
+            return ox2;
+
+
+
         }
 
     }
