@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
+using NSec.Cryptography;
 using ShakaCoin.Blockchain;
 
 namespace ShakaCoin.PaymentData
@@ -59,7 +60,10 @@ namespace ShakaCoin.PaymentData
 
             foreach (Input input in Inputs)
             {
-                feeSum += FileManagement.RetrieveOutputAmount();
+
+                (ulong, byte[]) data = FileManagement.Instance.RetrieveOutpointData(input.Outpoint);
+
+                feeSum += data.Item1;
             }
 
             foreach (Output outpt in Outputs)

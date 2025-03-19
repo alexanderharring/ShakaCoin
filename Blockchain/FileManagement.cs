@@ -19,7 +19,22 @@ namespace ShakaCoin.Blockchain
 
         private DatabaseInteraction _outputDB;
 
-        public FileManagement()
+        private static FileManagement _FileManagement;
+
+        public static FileManagement Instance
+        {
+            get
+            {
+                if (_FileManagement == null)
+                {
+                    _FileManagement = new FileManagement();
+                }
+
+                return _FileManagement;
+            }
+        }
+
+        private FileManagement()
         {
             if (!Directory.Exists(_appDataPath))
             {
@@ -111,9 +126,18 @@ namespace ShakaCoin.Blockchain
             return (_outputDB.GetValue(ox) != null);
         }
 
-        public static ulong RetrieveOutputAmount()
+        public (ulong, byte[]) RetrieveOutpointData(byte[] outpoint)
         {
-            return 0;
+
+
+            byte[] outpointData = _outputDB.GetValue(outpoint);
+
+            ulong amount = BitConverter.ToUInt64(outpointData, 4);
+            byte[] pk = new byte[32];
+
+            Buffer.BlockCopy(outpointData, 12, pk, 0, 32);
+
+            return (amount, pk);
         }
 
         public void DBAddValue(byte[] key, byte[] value)

@@ -21,6 +21,9 @@ namespace ShakaCoin.PaymentData
 
         public async Task StartMining()
         {
+            Block tBlock = GenesisBlock.MakeGenesisBlock();
+            _candidateBlock = new WorkingBlock(tBlock);
+
             Console.WriteLine("Started mining...");
 
             while (!(_miningCancel.IsCancellationRequested))

@@ -120,7 +120,34 @@ namespace ShakaCoin.PaymentData
             return blockBytes;
         }
 
-        
+        public bool IsBlockAcceptable()
+        {
+            Transaction allegedCoinbase = Transactions[0];
+
+            if (!allegedCoinbase.IsCoinbase())
+            {
+                return false;
+            }
+
+            if (!allegedCoinbase.Inputs[0].IsCoinbase())
+            {
+                return false;
+            }
+
+
+            for (int i = 1; i < Transactions.Count; i++)
+            {
+                Transaction tx = Transactions[i];
+
+                foreach (Input ix in tx.Inputs)
+                {
+                    if (!ix.VerifySignature())
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
 
         public byte[] GetBlockHash()
         {

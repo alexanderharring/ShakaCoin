@@ -15,7 +15,7 @@ namespace ShakaCoin.PaymentData
         {
             Block gBlock = new Block();
 
-            string pubKey = "3F804A90169864F10F66D7F9D176754F0B1A6EA539443FADA2D759878BA141D1";
+            string pubKey = "50C934260B7B86F04A3A9A8B0538C044C85BFAFEF2C028564B267987BF2C0DA0";
 
             byte version = 0b10000000; // coinbase transaction
 

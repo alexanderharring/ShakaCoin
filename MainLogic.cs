@@ -23,7 +23,7 @@ namespace ShakaCoin
         {
             Console.WriteLine("Running Shakacoin.");
 
-            _fm = new FileManagement();
+            _fm = FileManagement.Instance;
 
             WalletName = GetWalletName();
 
