@@ -26,25 +26,16 @@ namespace ShakaCoin.PaymentData
 
         public byte[] Target = new byte[32];
 
-        public ushort TransactionCount;
-
         public List<Transaction> Transactions = new List<Transaction>();
-
-        public byte[] BlockHeader = new byte[117];
-
-        public OutputBloomFilter outputBF;
 
         private ulong? _feeSum;
 
-        public MerkleNode? MerkleRootNode;
-
         public int? BlockSize;
 
-        public Block(uint bHeight)
+        public Block()
         {
-            outputBF = new OutputBloomFilter();
 
-            BlockHeight = bHeight;
+            //BlockHeight = bHeight;
             
         }
 
@@ -52,47 +43,8 @@ namespace ShakaCoin.PaymentData
         {
             Transactions.Add(newTx);
 
-            if (!(newTx.IsCoinbase())) {
-
-                foreach (Output ox in newTx.Outputs)
-                {
-                    outputBF.AddItem(ox.ExportToBytes());
-                }
-            }
-
-
         }
 
-        public void OverWriteIncrement()
-        {
-            byte[] miningIncBytes = BitConverter.GetBytes(MiningIncrement);
-
-            Array.Copy(miningIncBytes, 0, BlockHeader, 109, 8);
-        }
-
-        public void SetHeader() {
-
-            // order -> height (4) + version (1) + timestamp (8) + prev hash (32) + merkle root (32) + target ( 32 ) + mining increment (8)
-            byte[] headerBuild = new byte[117];
-
-            byte[] heightBytes = BitConverter.GetBytes(BlockHeight);
-
-            Array.Copy(heightBytes, 0, headerBuild, 0, 4);
-
-            heightBytes[4] = Version;
-
-            byte[] timeBytes = BitConverter.GetBytes(TimeStamp);
-            Array.Copy(timeBytes, 0, headerBuild, 5, 8);
-
-            Array.Copy(PreviousBlockHash, 0, headerBuild, 13, 32);
-            Array.Copy(MerkleRoot, 0, headerBuild, 45, 32);
-            Array.Copy(Target, 0, headerBuild, 77, 32);
-
-            byte[] miningIncBytes = BitConverter.GetBytes(MiningIncrement);
-            Array.Copy(Target, 0, headerBuild, 109, 8);
-
-            BlockHeader = headerBuild;
-        }
 
         public ulong GetBlockFee()
         {
@@ -111,6 +63,29 @@ namespace ShakaCoin.PaymentData
             return (ulong)_feeSum;
         }
 
+        public byte[] GetBlockHeader()
+        {
+            byte[] headerBuild = new byte[117];
+
+            byte[] heightBytes = BitConverter.GetBytes(BlockHeight);
+
+            Array.Copy(heightBytes, 0, headerBuild, 0, 4);
+
+            heightBytes[4] = Version;
+
+            byte[] timeBytes = BitConverter.GetBytes(TimeStamp);
+            Array.Copy(timeBytes, 0, headerBuild, 5, 8);
+
+            Array.Copy(PreviousBlockHash, 0, headerBuild, 13, 32);
+            Array.Copy(MerkleRoot, 0, headerBuild, 45, 32);
+            Array.Copy(Target, 0, headerBuild, 77, 32);
+
+            byte[] miningIncBytes = BitConverter.GetBytes(MiningIncrement);
+            Array.Copy(Target, 0, headerBuild, 109, 8);
+
+            return headerBuild;
+        }
+        
         public byte[] GetBlockBytes()
         {
             if (BlockSize is null)
@@ -124,10 +99,11 @@ namespace ShakaCoin.PaymentData
             }
             byte[] blockBytes = new byte[(int)BlockSize];
 
-            SetHeader();
-            Buffer.BlockCopy(BlockHeader, 0, blockBytes, 0, 117);
+            byte[] blockHeader = GetBlockHeader();
 
-            TransactionCount = (ushort)Transactions.Count;
+            Buffer.BlockCopy(blockHeader, 0, blockBytes, 0, 117);
+
+            ushort TransactionCount = (ushort)Transactions.Count;
             Buffer.BlockCopy(BitConverter.GetBytes(TransactionCount), 0, blockBytes, 117, 2);
 
             int offset = 0;
@@ -144,43 +120,11 @@ namespace ShakaCoin.PaymentData
             return blockBytes;
         }
 
-        public void GenerateMerkleRoot()
-        {
-            List<Transaction> merkleList = new List<Transaction>(Transactions);
-
-            Queue<MerkleNode> txQueue = new Queue<MerkleNode>();
-
-            foreach (Transaction tx in merkleList)
-            {
-                txQueue.Enqueue(new MerkleNode(Hasher.Hash256(tx.GetBytes())));
-            }
-
-            
-
-            while (txQueue.Count > 1)
-            {
-                MerkleNode mNode = txQueue.Dequeue();
-                MerkleNode? mNode0;
-                if (txQueue.Count == 0)
-                {
-                    mNode0 = new MerkleNode();
-                }
-                else
-                {
-                     mNode0 = txQueue.Dequeue();
-                }
-
-                txQueue.Enqueue(new MerkleNode(mNode, mNode0));
-
-            }
-
-            MerkleRootNode = txQueue.Dequeue();
-
-        }
+        
 
         public byte[] GetBlockHash()
         {
-            return Hasher.Hash256(BlockHeader);
+            return Hasher.Hash256(GetBlockHeader());
         }
 
     }

@@ -49,7 +49,7 @@ namespace ShakaCoin.Blockchain
             string fName = "b" + block.BlockHeight.ToString() + ".dat";
             string fileP = Path.Combine(BlockDir, fName);
 
-            File.WriteAllBytes(fileP, block.GetBytes());
+            File.WriteAllBytes(fileP, block.GetBlockBytes());
 
             foreach (Transaction tx in block.Transactions)
             {

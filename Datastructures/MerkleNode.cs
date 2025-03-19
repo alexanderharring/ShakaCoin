@@ -13,7 +13,7 @@ namespace ShakaCoin.Datastructures
         public byte[] Hash;
         public MerkleNode? Left;
         public MerkleNode? Right;
-        private bool _isLeaf;
+        public bool _isLeaf;
         private bool _isNull;
 
         public MerkleNode(byte[] hashData)

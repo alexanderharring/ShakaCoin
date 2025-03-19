@@ -11,12 +11,12 @@ namespace ShakaCoin.PaymentData
     public class Miner
     {
 
-        private Block _candidateBlock;
+        private WorkingBlock _candidateBlock;
         private CancellationTokenSource _miningCancel = new();
 
         public Miner()
         {
-            _candidateBlock = new Block(0);
+            _candidateBlock = new WorkingBlock(new Block());
         }
 
         public async Task StartMining()
@@ -37,7 +37,7 @@ namespace ShakaCoin.PaymentData
                 _candidateBlock.MiningIncrement++;
                 _candidateBlock.OverWriteIncrement();
 
-                byte[] headerHash = _candidateBlock.HashBlockHeader();  
+                byte[] headerHash = _candidateBlock.GetBlockHash();  
 
                 if (ShouldAcceptHash(headerHash, _candidateBlock.Target))
                 {

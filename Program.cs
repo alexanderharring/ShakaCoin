@@ -39,14 +39,20 @@ namespace ShakaCoin
         static void Main(string[] args)
         {
 
-            Transaction newTx = generateTransaction();
+            Block nb = new Block();
 
-            Transaction recon = Parser.ParseTransaction(newTx.GetBytes());
+            for (int i=0; i<100; i++)
+            {
+                nb.AddTransaction(generateTransaction());
+            }
 
-            Console.WriteLine(recon.GetBytes().Length);
+            WorkingBlock wb = new WorkingBlock(nb);
 
-            //Assert.AreEqual(Hasher.GetHexStringQuick(newTx.GetBytes()), Hasher.GetHexStringQuick(recon.GetBytes()));
+            wb.GenerateMerkleRoot();
 
+            byte[] ab = wb.GenerateMerkleProof(wb.Transactions[42]);
+
+            Console.WriteLine(ab.Length);
         }
 
     }

@@ -13,7 +13,7 @@ namespace ShakaCoin.PaymentData
 
         public static Block MakeGenesisBlock()
         {
-            Block gBlock = new Block(0);
+            Block gBlock = new Block();
 
             string pubKey = "3F804A90169864F10F66D7F9D176754F0B1A6EA539443FADA2D759878BA141D1";
 
