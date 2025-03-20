@@ -80,37 +80,37 @@ namespace ShakaCoin.Blockchain
             return buildTX;
         }
 
-        //    public static Block ParseBlock(byte[] data)
+        //public static Block ParseBlock(byte[] data)
+        //{
+
+        //    byte[] bHeader = new byte[117];
+
+        //    Buffer.BlockCopy(data, 0, bHeader, 0, 117);
+
+        //    uint blockHeight = BitConverter.ToUInt32(bHeader, 0);
+
+        //    Block buildBlock = new Block();
+
+        //    //buildBlock.TimeStamp; // change the whole block thingy to like a Block class and then a working block class that inherits it to work on maybe?
+
+        //    ushort txCount = BitConverter.ToUInt16(data, 117);
+
+        //    int offset = 0;
+
+        //    for (int i = 0; i < txCount; i++)
         //    {
+        //        ushort txSize = BitConverter.ToUInt16(data, 119 + offset);
+        //        byte[] txBytes = new byte[txSize];
 
-        //        byte[] bHeader = new byte[117];
+        //        Buffer.BlockCopy(data, offset + 2, txBytes, 0, txSize);
 
-        //        Buffer.BlockCopy(data, 0, bHeader, 0, 117);
+        //        Transaction tx = ParseTransaction(txBytes);
 
-        //        uint blockHeight = BitConverter.ToUInt32(bHeader, 0);
+        //        offset += (txSize + 2);
 
-        //        Block buildBlock = new Block();
-
-        //        //buildBlock.TimeStamp; // change the whole block thingy to like a Block class and then a working block class that inherits it to work on maybe?
-
-        //        ushort txCount = BitConverter.ToUInt16(data, 117);
-
-        //        int offset = 0;
-
-        //        for (int i = 0; i < txCount; i++)
-        //        {
-        //            ushort txSize = BitConverter.ToUInt16(data, 119 + offset);
-        //            byte[] txBytes = new byte[txSize];
-
-        //            Buffer.BlockCopy(data, offset+2, txBytes, 0, txSize);
-
-        //            Transaction tx = ParseTransaction(txBytes);
-
-        //            offset += (txSize+2);
-
-        //            buildBlock.AddTransaction(tx);
-        //        }
+        //        buildBlock.AddTransaction(tx);
         //    }
+        //}
 
     }
 }

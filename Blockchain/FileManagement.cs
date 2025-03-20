@@ -87,7 +87,7 @@ namespace ShakaCoin.Blockchain
             }
         }
 
-        public static byte[]? ReadBlock(uint height)
+        public static byte[] ReadBlock(uint height)
         {
             string fName = "b" + height.ToString() + ".dat";
             string fileP = Path.Combine(BlockDir, fName);
@@ -126,11 +126,16 @@ namespace ShakaCoin.Blockchain
             return (_outputDB.GetValue(ox) != null);
         }
 
-        public (ulong, byte[]) RetrieveOutpointData(byte[] outpoint)
+        public (ulong, byte[])? RetrieveOutpointData(byte[] outpoint)
         {
 
 
             byte[] outpointData = _outputDB.GetValue(outpoint);
+
+            if (outpointData is null)
+            {
+                return null;
+            }
 
             ulong amount = BitConverter.ToUInt64(outpointData, 4);
             byte[] pk = new byte[32];

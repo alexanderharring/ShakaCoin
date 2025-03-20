@@ -38,7 +38,17 @@ namespace ShakaCoin.PaymentData
             gTransaction.AddOutput(ox);
 
             gBlock.AddTransaction(gTransaction);
+            gBlock.BlockHeight = 0;
 
+            byte[] Target = new byte[32];
+            Target[3] = 0xF0;
+            gBlock.Target = Target;
+            gBlock.Version = 0x00;
+
+            WorkingBlock _wb = new WorkingBlock(gBlock);
+            _wb.GenerateMerkleRoot();
+
+            gBlock.MerkleRoot = _wb.MerkleRoot;
 
             return gBlock;
         }

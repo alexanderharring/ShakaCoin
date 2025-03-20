@@ -55,8 +55,9 @@ namespace ShakaCoin.PaymentData
 
             _feeSum = 0;
 
-            foreach (Transaction tx in Transactions)
+            for (int i=1; i<Transactions.Count; i++)
             {
+                Transaction tx = Transactions[i];
                 _feeSum += tx.CalculateFee();
             }
 
@@ -71,7 +72,7 @@ namespace ShakaCoin.PaymentData
 
             Array.Copy(heightBytes, 0, headerBuild, 0, 4);
 
-            heightBytes[4] = Version;
+            headerBuild[4] = Version;
 
             byte[] timeBytes = BitConverter.GetBytes(TimeStamp);
             Array.Copy(timeBytes, 0, headerBuild, 5, 8);
@@ -81,7 +82,7 @@ namespace ShakaCoin.PaymentData
             Array.Copy(Target, 0, headerBuild, 77, 32);
 
             byte[] miningIncBytes = BitConverter.GetBytes(MiningIncrement);
-            Array.Copy(Target, 0, headerBuild, 109, 8);
+            Array.Copy(miningIncBytes, 0, headerBuild, 109, 8);
 
             return headerBuild;
         }
@@ -139,14 +140,95 @@ namespace ShakaCoin.PaymentData
             {
                 Transaction tx = Transactions[i];
 
+                ulong amountIn = 0;
+                ulong amountOut = 0;
+
                 foreach (Input ix in tx.Inputs)
                 {
-                    if (!ix.VerifySignature())
+                    FileManagement fm = FileManagement.Instance;
+
+                    (ulong, byte[])? data = fm.RetrieveOutpointData(ix.Outpoint);
+
+                    if (!(data is null))
                     {
+                        if (!ix.VerifySignature(data.Value.Item2))
+                        {
+                            return false;
+                        }
+
+                        amountIn += data.Value.Item1;
+                    }
+                    else
+                    {
+                        Console.WriteLine("unable to verify block. Outpoint not found.");
                         return false;
                     }
                 }
+
+                foreach (Output ox in tx.Outputs)
+                {
+                    amountOut += ox.Amount;
+                }
+
+                if (amountOut > amountIn)
+                {
+                    return false;
+                }
+
             }
+
+            ulong minerFee = 0;
+            foreach (Output ox in Transactions[0].Outputs)
+            {
+                minerFee += ox.Amount;
+            }
+
+            if (minerFee >= 256)
+            {
+                minerFee -= 256;
+                
+                if (minerFee != GetBlockFee())
+                {
+                    return false;
+                }
+            }
+
+            byte[] bHash = GetBlockHash();
+
+            if (Hasher.IsByteArrayLarger(bHash, Target)) {
+                return false;
+            }
+
+            if (BlockHeight > 0)
+            {
+                byte[] prevBlock = FileManagement.ReadBlock(BlockHeight - 1);
+
+                byte[] prevHeader = new byte[117];
+                Buffer.BlockCopy(prevBlock, 0, prevHeader, 0, 117);
+
+                if (Hasher.GetHexStringQuick(Hasher.Hash256(prevHeader)) != Hasher.GetHexStringQuick(PreviousBlockHash))
+                {
+                    return false;
+                }
+            }
+
+            WorkingBlock _wb = new WorkingBlock(this);
+
+            _wb.GenerateMerkleRoot();
+
+            if (Hasher.GetHexStringQuick(_wb.MerkleRoot) != Hasher.GetHexStringQuick(MerkleRoot))
+            {
+                return false;
+            }
+
+            return true;
+            
+            
+        }
+
+        public void SetTimeStamp()
+        {
+            TimeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         }
 
         public byte[] GetBlockHash()

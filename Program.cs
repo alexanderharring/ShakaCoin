@@ -39,6 +39,24 @@ namespace ShakaCoin
         static void Main(string[] args)
         {
 
+            Block gb = GenesisBlock.MakeGenesisBlock();
+
+            for (ulong i = (ulong.MaxValue/8); i < (ulong.MaxValue); i++)
+            {
+                gb.MiningIncrement = (ulong)i;
+                byte[] hdr = gb.GetBlockHash();
+                Console.WriteLine(i.ToString() + " + " + Hasher.GetHexStringQuick(hdr));
+                if (Hasher.IsByteArrayLarger(gb.Target, hdr))
+                {
+                    Console.WriteLine("Finished mining");
+                    break;
+                }
+
+
+            } 
+
+
+
 
 
 

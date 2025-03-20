@@ -58,17 +58,23 @@ namespace ShakaCoin.PaymentData
 
             ulong feeSum = 0;
 
+
+
             foreach (Input input in Inputs)
             {
 
-                (ulong, byte[]) data = FileManagement.Instance.RetrieveOutpointData(input.Outpoint);
+                (ulong, byte[])? data = FileManagement.Instance.RetrieveOutpointData(input.Outpoint);
+                if (!(data is null))
+                {
+                    feeSum += data.Value.Item1;
+                }
 
-                feeSum += data.Item1;
+                
             }
 
             foreach (Output outpt in Outputs)
             {
-                feeSum += outpt.Amount;
+                feeSum -= outpt.Amount;
             }
 
             _Fee = feeSum;
