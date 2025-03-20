@@ -29,7 +29,7 @@ namespace ShakaCoin.PaymentData
 
             byte[] fakeSignature = new byte[64];
 
-            byte[] copySource = Hasher.GetBytesQuick("This is the coinbase transaction of the genesis block.");
+            byte[] copySource = Hasher.GetBytesQuick("This is the coinbase transaction of the genesis block. :)");
             Array.Copy(copySource, fakeSignature, copySource.Length);
 
             ix.AddSignature(fakeSignature);
@@ -49,6 +49,7 @@ namespace ShakaCoin.PaymentData
             _wb.GenerateMerkleRoot();
 
             gBlock.MerkleRoot = _wb.MerkleRoot;
+            gBlock.MiningIncrement = 137923315195;
 
             return gBlock;
         }

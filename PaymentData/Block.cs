@@ -94,7 +94,7 @@ namespace ShakaCoin.PaymentData
                 BlockSize = 119;
                 foreach (Transaction tx in Transactions)
                 {
-                    BlockSize += tx.GetBytes().Length;
+                    BlockSize += tx.GetBytes().Length + 2;
                 }
 
             }
@@ -114,8 +114,8 @@ namespace ShakaCoin.PaymentData
                 byte[] thisTx = Transactions[i].GetBytes();
                 ushort TxSize = (ushort)thisTx.Length; // the maximum size of a transaction is about 34kB which fits inside of a ushort
                 Buffer.BlockCopy(BitConverter.GetBytes(TxSize), 0, blockBytes, 119 + offset, 2);
-                Buffer.BlockCopy(thisTx, 0, blockBytes, 121 + offset, thisTx.Length);
-                offset += (thisTx.Length + 2);
+                Buffer.BlockCopy(thisTx, 0, blockBytes, 121 + offset, TxSize);
+                offset += (TxSize + 2);
             }
 
             return blockBytes;

@@ -18,7 +18,6 @@ namespace ShakaCoin.Blockchain
 
             ulong amount = BitConverter.ToUInt64(data, 32);
 
-            Console.WriteLine(amount);
             byte[] pk = new byte[32];
             Buffer.BlockCopy(data, 0, pk, 0, 32);
 
@@ -29,7 +28,6 @@ namespace ShakaCoin.Blockchain
         {
             if (data.Length != 97)
             {
-                
                 throw new ArgumentException();
             }
 
@@ -59,7 +57,7 @@ namespace ShakaCoin.Blockchain
 
                 Buffer.BlockCopy(data, 2 + i * 97, ixBytes, 0, 97);
 
-                Input ix = ParseInput(data);
+                Input ix = ParseInput(ixBytes);
 
                 buildTX.AddInput(ix);
             }
@@ -80,37 +78,62 @@ namespace ShakaCoin.Blockchain
             return buildTX;
         }
 
-        //public static Block ParseBlock(byte[] data)
-        //{
+        public static Block ParseBlock(byte[] data)
+        {
 
-        //    byte[] bHeader = new byte[117];
+            Block buildBlock = new Block();
 
-        //    Buffer.BlockCopy(data, 0, bHeader, 0, 117);
+            byte[] bHeader = new byte[117];
 
-        //    uint blockHeight = BitConverter.ToUInt32(bHeader, 0);
+            Buffer.BlockCopy(data, 0, bHeader, 0, 117);
 
-        //    Block buildBlock = new Block();
+            byte[] heightBytes = new byte[4];
+            Buffer.BlockCopy(bHeader, 0, heightBytes, 0, 4);
+            buildBlock.BlockHeight = BitConverter.ToUInt32(heightBytes);
 
-        //    //buildBlock.TimeStamp; // change the whole block thingy to like a Block class and then a working block class that inherits it to work on maybe?
+            buildBlock.Version = bHeader[4];
 
-        //    ushort txCount = BitConverter.ToUInt16(data, 117);
+            byte[] tStamp = new byte[8];
+            Buffer.BlockCopy(bHeader, 5, tStamp, 0, 8);
+            buildBlock.TimeStamp = BitConverter.ToUInt32(tStamp);
 
-        //    int offset = 0;
+            byte[] prevHash = new byte[32];
+            byte[] merkleRoot = new byte[32];
+            byte[] targetV = new byte[32];
 
-        //    for (int i = 0; i < txCount; i++)
-        //    {
-        //        ushort txSize = BitConverter.ToUInt16(data, 119 + offset);
-        //        byte[] txBytes = new byte[txSize];
+            Buffer.BlockCopy(bHeader, 13, prevHash, 0, 32);
+            Buffer.BlockCopy(bHeader, 45, merkleRoot, 0, 32);
+            Buffer.BlockCopy(bHeader, 77, targetV, 0, 32);
 
-        //        Buffer.BlockCopy(data, offset + 2, txBytes, 0, txSize);
+            buildBlock.PreviousBlockHash = prevHash;
+            buildBlock.MerkleRoot = merkleRoot;
+            buildBlock.Target = targetV;
 
-        //        Transaction tx = ParseTransaction(txBytes);
+            byte[] miningIncrement = new byte[8];
+            Buffer.BlockCopy(bHeader, 109, miningIncrement, 0, 8);
 
-        //        offset += (txSize + 2);
+            buildBlock.MiningIncrement = BitConverter.ToUInt64(miningIncrement);
 
-        //        buildBlock.AddTransaction(tx);
-        //    }
-        //}
+            ushort txCount = BitConverter.ToUInt16(data, 117);
+
+            int offset = 0;
+
+            for (int i = 0; i < txCount; i++)
+            {
+                ushort txSize = BitConverter.ToUInt16(data, 119 + offset);
+                byte[] txBytes = new byte[txSize];
+
+                Buffer.BlockCopy(data, 121 + offset, txBytes, 0, txSize);
+
+                Transaction tx = ParseTransaction(txBytes);
+
+                offset += (txSize + 2);
+
+                buildBlock.AddTransaction(tx);
+            }
+
+            return buildBlock;
+        }
 
     }
 }
