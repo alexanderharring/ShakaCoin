@@ -106,11 +106,17 @@ namespace ShakaCoin.Blockchain
 
         }
 
-        private void CheckGenesisBlock()
+        public void CheckGenesisBlock()
         {
-            if (ReadBlock(0).Length == 0) // no genesis block
+            if (ReadBlock(0) is null) // no genesis block
             {
+                Console.WriteLine("Writing genesis block...");
+                Block gb = GenesisBlock.MakeGenesisBlock();
 
+                WriteBlock(gb);
+            } else
+            {
+                Console.WriteLine("Gb already exists");
             }
         }
 

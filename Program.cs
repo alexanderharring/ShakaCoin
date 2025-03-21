@@ -50,22 +50,13 @@ namespace ShakaCoin
 
             Console.WriteLine("Looking for connection");
 
-            Random rnd = new Random();
-
-            List<byte> randomData = new List<byte>();
-
-            for (int j = 0; j < (rnd.Next(100, 400)); j++)
-            {
-                randomData.Add((byte)rnd.Next(0, 255));
-            }
-            byte[] sampleData = randomData.ToArray();
-
-            await Task.Delay(500);
-
-            await peer.SendData(IPAddress.Parse("172.28.140.43"), sampleData);
+            await peer.SendData(IPAddress.Parse("172.22.86.12"), [0xAA, 0xBB]);
 
             Console.WriteLine("here");
             Console.ReadLine();
+
+
+
 
         }
     }
