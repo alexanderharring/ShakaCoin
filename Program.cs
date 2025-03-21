@@ -43,26 +43,28 @@ namespace ShakaCoin
 
         static void Main(string[] args)
         {
-            Block nb = new Block();
-            nb.TimeStamp = 12345;
-            nb.BlockHeight = 54321;
-            nb.PreviousBlockHash = Hasher.Hash256([0x0F]);
+            Block gb = GenesisBlock.MakeGenesisBlock();
 
-            for (int i = 0; i < 10; i++)
+            ulong start = (ulong)Math.Pow(2,20);
+
+            gb.MiningIncrement = start;
+
+            for (ulong i = start; i < ulong.MaxValue; i++)
             {
-                nb.AddTransaction(generateTransaction());
-            }
+                gb.MiningIncrement = i;
 
-            nb.MerkleRoot = Hasher.Hash256([0xFF]);
-            nb.MiningIncrement = 1234321312;
-            nb.Target = Hasher.Hash256([0xDF]);
+                if ((i % 1000000) == 0)
+                {
+                    Console.WriteLine("Increment = " + i.ToString());
+                }
 
-            byte[] data = nb.GetBlockBytes();
+                if (Hasher.IsByteArrayLarger(gb.Target, gb.GetBlockHash()))
+                {
+                    Console.WriteLine("Mining Done: " + i.ToString() + " " + Hasher.GetHexStringQuick(gb.GetBlockHash()));
+                    break;
+                }
+            } 
 
-            Block recon = Parser.ParseBlock(data);
-
-            Assert.AreEqual(Hasher.GetHexStringQuick(nb.GetBlockHash()), Hasher.GetHexStringQuick(recon.GetBlockHash()));
         }
-
     }
 }

@@ -49,7 +49,7 @@ namespace ShakaCoin.PaymentData
             _wb.GenerateMerkleRoot();
 
             gBlock.MerkleRoot = _wb.MerkleRoot;
-            gBlock.MiningIncrement = 137923315195;
+            gBlock.TimeStamp = 1742546372;
 
             return gBlock;
         }
