@@ -7,6 +7,7 @@ using ShakaCoin.Blockchain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 using ShakaCoin.Datastructures;
+using System.Runtime.InteropServices;
 
 namespace ShakaCoin
 {
@@ -41,29 +42,30 @@ namespace ShakaCoin
             return tx;
         }
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Block gb = GenesisBlock.MakeGenesisBlock();
+            var peer = new NetworkPeer(true);
 
-            ulong start = (ulong)Math.Pow(2,20);
+            _ = peer.StartListening();
 
-            gb.MiningIncrement = start;
+            Console.WriteLine("Looking for connection");
 
-            for (ulong i = start; i < ulong.MaxValue; i++)
+            Random rnd = new Random();
+
+            List<byte> randomData = new List<byte>();
+
+            for (int j = 0; j < (rnd.Next(100, 400)); j++)
             {
-                gb.MiningIncrement = i;
+                randomData.Add((byte)rnd.Next(0, 255));
+            }
+            byte[] sampleData = randomData.ToArray();
 
-                if ((i % 1000000) == 0)
-                {
-                    Console.WriteLine("Increment = " + i.ToString());
-                }
+            await Task.Delay(500);
 
-                if (Hasher.IsByteArrayLarger(gb.Target, gb.GetBlockHash()))
-                {
-                    Console.WriteLine("Mining Done: " + i.ToString() + " " + Hasher.GetHexStringQuick(gb.GetBlockHash()));
-                    break;
-                }
-            } 
+            await peer.SendData(IPAddress.Parse("172.28.140.43"), sampleData);
+
+            Console.WriteLine("here");
+            Console.ReadLine();
 
         }
     }

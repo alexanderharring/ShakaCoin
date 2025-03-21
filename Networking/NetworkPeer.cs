@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Net;
 using System.Runtime.InteropServices;
+using ShakaCoin.Blockchain;
 
 namespace ShakaCoin.Networking
 {
@@ -47,17 +48,31 @@ namespace ShakaCoin.Networking
 
         private async Task HandleClient(TcpClient newClient)
         {
-            Console.WriteLine("Initial");
-            await using NetworkStream dataStream = newClient.GetStream();
-            byte[] receiveBuffer = new byte[1024];
+            Console.WriteLine("Client connected...");
 
-            Console.WriteLine("Client connected");
+            NetworkStream dataStream = newClient.GetStream();
 
-            int received = await dataStream.ReadAsync(receiveBuffer, 0, receiveBuffer.Length);
-            string receivedHx = Convert.ToHexString(receiveBuffer);
+            List<byte> dataList = new List<byte>();
 
-            Console.WriteLine(receivedHx);
+            byte[] receiveBuffer = new byte[4096];
 
+            int received = 0;
+
+
+            while ((received = await dataStream.ReadAsync(receiveBuffer, 0, receiveBuffer.Length)) > 0)
+            {
+                Console.WriteLine(received);
+                dataList.AddRange(receiveBuffer.Take(received));
+
+            }
+            
+            string bigMessage = Hasher.GetStringQuick(dataList.ToArray());
+
+            Console.WriteLine("Received... " + bigMessage);
+
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine("");
             newClient.Close();
         }
 
@@ -68,9 +83,10 @@ namespace ShakaCoin.Networking
             NetworkStream dataStream = newClient.GetStream();
 
             
-            if (true)
+            if (_debug)
             {
-                Console.WriteLine("Sent data -> " + Convert.ToHexString(content));
+                Console.WriteLine("Sent data -> " + Hasher.GetHexStringQuick(content));
+                Console.WriteLine("");
             }
 
             await dataStream.WriteAsync(content);
