@@ -6,6 +6,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using ShakaCoin.Blockchain;
 
 namespace ShakaCoin.Networking
 {
@@ -24,6 +25,8 @@ namespace ShakaCoin.Networking
         {
             _listener.Start();
 
+            Console.WriteLine("Started bootstrap node");
+
             while (true)
             {
                 var newClient = await _listener.AcceptTcpClientAsync();
@@ -33,7 +36,31 @@ namespace ShakaCoin.Networking
 
                 Console.WriteLine("Connected to new peer ");
 
-                _ = Handlecli
+                _ = HandleNewPeer(newPeer);
+            }
+        }
+
+        private async Task HandleNewPeer(Peer peer)
+        {
+            byte[] msg = peer.ReceiveMessage().Result;
+
+            if (Hasher.GetHexStringQuick(msg) == NetworkConstants.GetPeersCode)
+            {
+                List<string> ips = new List<string>();
+
+
+                foreach (Peer p in _peers)
+                {
+                    ips.Add(p.GetIP());
+                }
+
+                string buildPeers = string.Join(",", ips);
+
+                await peer.SendMessage(Hasher.GetBytesQuick(buildPeers));
+
+            } else
+            {
+                Console.WriteLine("idk whats going on");
             }
         }
 

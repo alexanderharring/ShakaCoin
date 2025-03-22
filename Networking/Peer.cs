@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +30,13 @@ namespace ShakaCoin.Networking
             int bRead = await _stream.ReadAsync(buffer, 0, buffer.Length);
 
             return buffer.Take(bRead).ToArray();
+        }
+
+        public string GetIP()
+        {
+            IPEndPoint ipEndP = (IPEndPoint)_client.Client.RemoteEndPoint;
+
+            return ipEndP.Address.ToString();
         }
 
         public void Close()

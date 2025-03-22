@@ -35,7 +35,7 @@ namespace ShakaCoin.Networking
 
                 Console.WriteLine("Connected to new peer");
 
-                
+                _ = HandlePeer(newPeer);
             }
         }
 

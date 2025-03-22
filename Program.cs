@@ -44,19 +44,8 @@ namespace ShakaCoin
 
         static async Task Main(string[] args)
         {
-            var peer = new NetworkPeer(true);
-
-            _ = peer.StartListening();
-
-            Console.WriteLine("Looking for connection");
-
-            await peer.SendData(IPAddress.Parse("172.22.86.12"), [0xAA, 0xBB]);
-
-            Console.WriteLine("here");
-            Console.ReadLine();
-
-
-
+            var bootstrap = new BootstrapNode();
+            await bootstrap.Start();
 
         }
     }
