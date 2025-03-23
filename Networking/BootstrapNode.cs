@@ -31,13 +31,12 @@ namespace ShakaCoin.Networking
             {
                 
                 var newClient = await _listener.AcceptTcpClientAsync();
-                Console.WriteLine("detected new client");
 
                 var newPeer = new Peer(newClient);
 
                 _peers.Add(newPeer);
 
-                Console.WriteLine("Connected to new peer ");
+                Console.WriteLine("Connected to new peer @ " + newPeer.GetIP());
 
                 _ = HandleNewPeer(newPeer);
             }
@@ -49,7 +48,6 @@ namespace ShakaCoin.Networking
 
             if (Hasher.GetHexStringQuick(msg) == NetworkConstants.GetPeersCode)
             {
-                Console.WriteLine("getting peers");
 
                 List<string> ips = new List<string>();
 
@@ -62,6 +60,8 @@ namespace ShakaCoin.Networking
                 string buildPeers = string.Join(",", ips);
 
                 await peer.SendMessage(Hasher.GetBytesQuick(buildPeers));
+
+                Console.WriteLine("Sent list of nodes to " + peer.GetIP());
 
             } else
             {
