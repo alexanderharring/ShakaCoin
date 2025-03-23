@@ -79,19 +79,25 @@ namespace ShakaCoin.Networking
         {
             while (true)
             {
+                Console.WriteLine("hre");
+
                 foreach (Peer checkPeer in _peers)
                 {
                     await CheckThisPeerStatus(checkPeer);
                 }
 
                 await Task.Delay(NetworkConstants.PingDuration);
+                Console.WriteLine("Hree");
             }
         }
 
         private async Task CheckThisPeerStatus(Peer checkPeer)
         {
+            Console.WriteLine("A");
             await checkPeer.SendMessage(Hasher.GetBytesQuick(NetworkConstants.PingCode));
+            Console.WriteLine("B");
             var res = await checkPeer.ReceiveMessage();
+            Console.WriteLine("C");
 
             if (Hasher.GetHexStringQuick(res) != NetworkConstants.PongCode)
             {

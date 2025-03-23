@@ -35,6 +35,8 @@ namespace ShakaCoin.Networking
             {
                 var newClient = await _listener.AcceptTcpClientAsync();
 
+                Console.WriteLine("here!!!");
+
                 var newPeer = new Peer(newClient);
 
                 if (_peers.Count > 64)
