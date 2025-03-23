@@ -33,7 +33,7 @@ namespace ShakaCoin.Networking
 
                 var newPeer = new Peer(newClient);
 
-                Console.WriteLine("Connected to new peer");
+                Console.WriteLine("Accepted connection to new peer @ " + newPeer.GetIP());
 
                 _ = HandlePeer(newPeer);
             }
@@ -61,6 +61,7 @@ namespace ShakaCoin.Networking
         {
 
             Console.WriteLine("Listing " + peerList.Length.ToString() + " peers");
+            Console.WriteLine("");
             for (int i = 0; i < peerList.Length; i++)
             {
                 string ipN = peerList[i];
@@ -73,6 +74,7 @@ namespace ShakaCoin.Networking
                     Console.WriteLine("#" + i.ToString() + " - " + ipN);
                 }
             }
+            Console.WriteLine("");
         }
 
         public async Task ConnectToBootstrapNode()
@@ -85,6 +87,7 @@ namespace ShakaCoin.Networking
             _peers.Add(newPeer);
 
             Console.WriteLine("Connected to bootstrap node.");
+            Console.WriteLine("This node's IP is " + newPeer.GetMyIP());
 
             await newPeer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.GetPeersCode));
 
@@ -96,7 +99,6 @@ namespace ShakaCoin.Networking
 
             string myIP = newPeer.GetMyIP();
 
-            Console.WriteLine(myIP);
 
             DisplayPeerList(ipAds, myIP);
 
@@ -118,7 +120,7 @@ namespace ShakaCoin.Networking
             var newPeer = new Peer(tcpClient);
             _peers.Add(newPeer);
 
-            Console.WriteLine("Connected to other peer ");
+            Console.WriteLine("Connected to other peer @ " + newPeer.GetIP());
         }
 
         public List<Peer> ListPeers()
