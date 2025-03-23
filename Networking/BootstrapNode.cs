@@ -25,6 +25,8 @@ namespace ShakaCoin.Networking
         {
             _listener.Start();
 
+            _ = CheckPeerStatuses();
+
             Console.WriteLine("Started bootstrap node");
 
             while (true)
@@ -62,10 +64,40 @@ namespace ShakaCoin.Networking
                 await peer.SendMessage(Hasher.GetBytesQuick(buildPeers));
 
                 Console.WriteLine("Sent list of nodes to " + peer.GetIP());
-
-            } else
+            }
+            else if (Hasher.GetHexStringQuick(msg) == NetworkConstants.PingCode)
             {
-                Console.WriteLine("Non get peers request asked to bootsrap node :(");
+                await peer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.PongCode));
+            }
+            else
+            {
+                Console.WriteLine("Non get-peers request asked to bootsrap node :(");
+            }
+        }
+
+        private async Task CheckPeerStatuses()
+        {
+            while (true)
+            {
+                foreach (Peer checkPeer in _peers)
+                {
+                    await CheckThisPeerStatus(checkPeer);
+                }
+
+                await Task.Delay(NetworkConstants.PingDuration);
+            }
+        }
+
+        private async Task CheckThisPeerStatus(Peer checkPeer)
+        {
+            await checkPeer.SendMessage(Hasher.GetBytesQuick(NetworkConstants.PingCode));
+            var res = await checkPeer.ReceiveMessage();
+
+            if (Hasher.GetHexStringQuick(res) != NetworkConstants.PongCode)
+            {
+                Console.WriteLine("Peer @ " + checkPeer.GetIP() + " failed ping test");
+                checkPeer.Close();
+                _peers.Remove(checkPeer);
             }
         }
 

@@ -61,28 +61,31 @@ namespace ShakaCoin.Networking
             {
                 await peer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.GetPeersCode));
             }
+            else if (hexCode == NetworkConstants.PingCode)
+            {
+                await peer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.PongCode));
+            }
         }
 
         private async Task CheckPeerStatuses()
         {
             while (true)
             {
-                Console.WriteLine("here");
                 foreach (Peer checkPeer in _peers)
                 {
                     await CheckThisPeerStatus(checkPeer);
                 }
 
-                await Task.Delay(2000);
+                await Task.Delay(NetworkConstants.PingDuration);
             }
         }
 
         private async Task CheckThisPeerStatus(Peer checkPeer)
         {
-            await checkPeer.SendMessage(Hasher.GetBytesQuick(NetworkConstants.PingCode));
+            await checkPeer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.PingCode));
             var res = await checkPeer.ReceiveMessage();
 
-            if (Hasher.GetStringQuick(res) != NetworkConstants.PongCode)
+            if (Hasher.GetHexStringQuick(res) != NetworkConstants.PongCode)
             {
                 Console.WriteLine("Peer @ " + checkPeer.GetIP() + " failed ping test");
                 checkPeer.Close();

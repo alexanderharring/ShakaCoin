@@ -15,6 +15,7 @@ namespace ShakaCoin.Networking
         public static readonly string GetPeersCode = "AABBCC";
         public static readonly string PingCode = "AACCBB";
         public static readonly string PongCode = "CCAABB";
+        public static readonly int PingDuration = 3000;
 
     }
 }
