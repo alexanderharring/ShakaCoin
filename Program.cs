@@ -52,9 +52,8 @@ namespace ShakaCoin
         {
             var peerManager = new PeerManager();
             await peerManager.ConnectToBootstrapNode();
+            await peerManager.Start();
 
-            var newServer = new P2PServer();
-            await newServer.Start();
         }
 
         static async Task Main(string[] args)
