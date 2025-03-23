@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,6 +28,8 @@ namespace ShakaCoin.Networking
             _running = true;
 
             Console.WriteLine("Started running P2P server on " + NetworkConstants.Port.ToString());
+
+            _ = CheckPeerStatuses();
 
             while (_running)
             {
@@ -57,6 +60,33 @@ namespace ShakaCoin.Networking
             if (hexCode == NetworkConstants.GetPeersCode)
             {
                 await peer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.GetPeersCode));
+            }
+        }
+
+        private async Task CheckPeerStatuses()
+        {
+            while (true)
+            {
+                Console.WriteLine("here");
+                foreach (Peer checkPeer in _peers)
+                {
+                    await CheckThisPeerStatus(checkPeer);
+                }
+
+                await Task.Delay(2000);
+            }
+        }
+
+        private async Task CheckThisPeerStatus(Peer checkPeer)
+        {
+            await checkPeer.SendMessage(Hasher.GetBytesQuick(NetworkConstants.PingCode));
+            var res = await checkPeer.ReceiveMessage();
+
+            if (Hasher.GetStringQuick(res) != NetworkConstants.PongCode)
+            {
+                Console.WriteLine("Peer @ " + checkPeer.GetIP() + " failed ping test");
+                checkPeer.Close();
+                _peers.Remove(checkPeer);
             }
         }
 
