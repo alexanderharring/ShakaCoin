@@ -35,6 +35,8 @@ namespace ShakaCoin.Networking
 
             string PeerList = Hasher.GetStringQuick(returnedPeerList);
 
+            Console.WriteLine("Received peer list: " + PeerList);
+
             string[] ipAds = PeerList.Split(",");
 
             foreach (string ip in ipAds)

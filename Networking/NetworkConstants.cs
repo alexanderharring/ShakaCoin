@@ -11,7 +11,7 @@ namespace ShakaCoin.Networking
     internal class NetworkConstants
     {
         public static readonly int Port = 7770; 
-        public static readonly IPAddress BootstrapAddress = IPAddress.Parse("81.97.158.61");
+        public static readonly IPAddress BootstrapAddress = IPAddress.Parse("192.168.66.78");
         public static readonly string GetPeersCode = "AABBCC";
 
     }

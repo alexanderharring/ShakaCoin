@@ -29,7 +29,10 @@ namespace ShakaCoin.Networking
 
             while (true)
             {
+                
                 var newClient = await _listener.AcceptTcpClientAsync();
+                Console.WriteLine("detected new client");
+
                 var newPeer = new Peer(newClient);
 
                 _peers.Add(newPeer);
@@ -46,6 +49,8 @@ namespace ShakaCoin.Networking
 
             if (Hasher.GetHexStringQuick(msg) == NetworkConstants.GetPeersCode)
             {
+                Console.WriteLine("getting peers");
+
                 List<string> ips = new List<string>();
 
 
