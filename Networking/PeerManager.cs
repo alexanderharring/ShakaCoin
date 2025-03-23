@@ -18,6 +18,22 @@ namespace ShakaCoin.Networking
 
         }
 
+        private void DisplayPeerList(string[] peerList, string myip)
+        {
+            for (int i = 0; i < peerList.Length; i++)
+            {
+                string ipN = peerList[i];
+
+                if (ipN == myip)
+                {
+                    Console.WriteLine("#" + i.ToString() + " - " + ipN + " ( you )");
+                } else
+                {
+                    Console.WriteLine("#" + i.ToString() + " - " + ipN);
+                }
+            }
+        }
+
         public async Task ConnectToBootstrapNode()
         {
             var tcpClient = new TcpClient();
@@ -35,9 +51,11 @@ namespace ShakaCoin.Networking
 
             string PeerList = Hasher.GetStringQuick(returnedPeerList);
 
-            Console.WriteLine("Received peer list: " + PeerList);
-
             string[] ipAds = PeerList.Split(",");
+
+            string myIP = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();
+
+            DisplayPeerList(ipAds, myIP);
 
             foreach (string ip in ipAds)
             {
