@@ -39,10 +39,10 @@ namespace ShakaCoin.Networking
 
             if (ipAddress.IsIPv4MappedToIPv6)
             {
-                ipAddress = ipAddress.MapToIPv4();
+                return ipAddress.MapToIPv4().ToString();
             }
 
-            return ipEndP.Address.ToString();
+            return ipAddress.ToString();
         }
 
         public string GetMyIP()
@@ -52,10 +52,10 @@ namespace ShakaCoin.Networking
 
             if (ipAddress.IsIPv4MappedToIPv6)
             {
-                ipAddress = ipAddress.MapToIPv4();
+                return ipAddress.MapToIPv4().ToString();
             }
 
-            return ipEndP.Address.ToString();
+            return ipAddress.ToString();
         }
 
         public void Close()

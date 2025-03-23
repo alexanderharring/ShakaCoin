@@ -57,6 +57,8 @@ namespace ShakaCoin.Networking
 
             string myIP = newPeer.GetMyIP();
 
+            Console.WriteLine(myIP);
+
             DisplayPeerList(ipAds, myIP);
 
             foreach (string ip in ipAds)
