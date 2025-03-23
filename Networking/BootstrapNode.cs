@@ -79,8 +79,6 @@ namespace ShakaCoin.Networking
         {
             while (true)
             {
-                Console.WriteLine("hre");
-
                 foreach (Peer checkPeer in _peers)
                 {
                     await CheckThisPeerStatus(checkPeer);

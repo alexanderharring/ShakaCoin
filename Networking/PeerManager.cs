@@ -33,6 +33,8 @@ namespace ShakaCoin.Networking
 
             while (_running)
             {
+                ListenToPeers();
+
                 var newClient = await _listener.AcceptTcpClientAsync();
 
                 Console.WriteLine("here!!!");
@@ -53,8 +55,19 @@ namespace ShakaCoin.Networking
             }
         }
 
+        private void ListenToPeers()
+        {
+            _ = HandlePeer(_bootstrapNode);
+
+            foreach (Peer p in _peers)
+            {
+                _ = HandlePeer(p);
+            }
+        }
+
         private async Task HandlePeer(Peer peer)
         {
+
             byte[] msg = await peer.ReceiveMessage();
 
             string hexCode = Hasher.GetHexStringQuick(msg);

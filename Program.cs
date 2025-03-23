@@ -52,8 +52,7 @@ namespace ShakaCoin
         {
             var peerManager = new PeerManager();
             await peerManager.ConnectToBootstrapNode();
-            _ = peerManager.Start();
-            Console.WriteLine("here");
+            await peerManager.Start();
 
         }
 
