@@ -13,7 +13,7 @@ namespace ShakaCoin.Networking
     internal class BootstrapNode
     {
         private TcpListener _listener;
-        private List<Peer> _peers = new List<Peer>();
+        private HashSet<Peer> _peers = new HashSet<Peer>();
 
         public BootstrapNode()
         {
@@ -65,7 +65,7 @@ namespace ShakaCoin.Networking
 
             } else
             {
-                Console.WriteLine("idk whats going on");
+                Console.WriteLine("Non get peers request asked to bootsrap node :(");
             }
         }
 

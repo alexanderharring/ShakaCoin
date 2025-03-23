@@ -11,8 +11,9 @@ namespace ShakaCoin.Networking
 {
     internal class PeerManager
     {
-        private List<Peer> _peers = new List<Peer>();
+        private HashSet<Peer> _peers = new HashSet<Peer>();
         private TcpListener _listener;
+        private Peer? _bootstrapNode;
         private bool _running;
 
         public PeerManager()
@@ -32,6 +33,14 @@ namespace ShakaCoin.Networking
                 var newClient = await _listener.AcceptTcpClientAsync();
 
                 var newPeer = new Peer(newClient);
+
+                if (_peers.Count > 64)
+                {
+                    newPeer.Close();
+                    continue;
+                }
+
+                _peers.Add(newPeer);
 
                 Console.WriteLine("Accepted connection to new peer @ " + newPeer.GetIP());
 
@@ -84,7 +93,8 @@ namespace ShakaCoin.Networking
             await tcpClient.ConnectAsync(NetworkConstants.BootstrapAddress, NetworkConstants.Port);
 
             var newPeer = new Peer(tcpClient);
-            _peers.Add(newPeer);
+
+            _bootstrapNode = newPeer;
 
             Console.WriteLine("Connected to bootstrap node.");
             Console.WriteLine("This node's IP is " + newPeer.GetMyIP());
@@ -125,7 +135,28 @@ namespace ShakaCoin.Networking
 
         public List<Peer> ListPeers()
         {
-            return _peers;
+            return _peers.ToList();
+        }
+
+        public Peer[] GetNPeers(int n)
+        {
+            
+            if (n >= _peers.Count)
+            {
+                return _peers.ToArray();
+            } else
+            {
+                HashSet<Peer> getPeers = new HashSet<Peer>();
+                Peer[] prs = _peers.ToArray();
+                Random rnd = new Random();
+
+                while (getPeers.Count < n)
+                {
+                    getPeers.Add(prs[rnd.Next(prs.Length)]);
+                }
+
+                return getPeers.ToArray();
+            }
         }
 
     }

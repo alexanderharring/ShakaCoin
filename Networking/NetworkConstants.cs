@@ -13,6 +13,8 @@ namespace ShakaCoin.Networking
         public static readonly int Port = 7770; 
         public static readonly IPAddress BootstrapAddress = IPAddress.Parse("192.168.66.78");
         public static readonly string GetPeersCode = "AABBCC";
+        public static readonly string PingCode = "AACCBB";
+        public static readonly string PongCode = "CCAABB";
 
     }
 }
