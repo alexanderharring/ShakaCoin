@@ -42,10 +42,24 @@ namespace ShakaCoin
             return tx;
         }
 
-        static async Task Main(string[] args)
+        public async void RunBootstrap()
         {
             var bootstrap = new BootstrapNode();
             await bootstrap.Start();
+        }
+
+        public async void RunPeerNode()
+        {
+            var peerManager = new PeerManager();
+            await peerManager.ConnectToBootstrapNode();
+
+            var newServer = new P2PServer();
+            await newServer.Start();
+        }
+
+        static async Task Main(string[] args)
+        {
+
 
         }
     }
