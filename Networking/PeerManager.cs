@@ -20,6 +20,8 @@ namespace ShakaCoin.Networking
 
         private void DisplayPeerList(string[] peerList, string myip)
         {
+
+            Console.WriteLine("Listing " + peerList.Length.ToString() + " peers");
             for (int i = 0; i < peerList.Length; i++)
             {
                 string ipN = peerList[i];
@@ -53,7 +55,7 @@ namespace ShakaCoin.Networking
 
             string[] ipAds = PeerList.Split(",");
 
-            string myIP = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();
+            string myIP = newPeer.GetMyIP();
 
             DisplayPeerList(ipAds, myIP);
 

@@ -35,6 +35,25 @@ namespace ShakaCoin.Networking
         public string GetIP()
         {
             IPEndPoint ipEndP = (IPEndPoint)_client.Client.RemoteEndPoint;
+            IPAddress ipAddress = ipEndP.Address;
+
+            if (ipAddress.IsIPv4MappedToIPv6)
+            {
+                ipAddress = ipAddress.MapToIPv4();
+            }
+
+            return ipEndP.Address.ToString();
+        }
+
+        public string GetMyIP()
+        {
+            IPEndPoint ipEndP = (IPEndPoint)_client.Client.LocalEndPoint;
+            IPAddress ipAddress = ipEndP.Address;
+
+            if (ipAddress.IsIPv4MappedToIPv6)
+            {
+                ipAddress = ipAddress.MapToIPv4();
+            }
 
             return ipEndP.Address.ToString();
         }
