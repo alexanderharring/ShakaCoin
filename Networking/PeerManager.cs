@@ -63,6 +63,7 @@ namespace ShakaCoin.Networking
 
             foreach (string ip in ipAds)
             {
+                Console.WriteLine(ip);
                 await ConnectToNewPeer(ip);
             }
         }

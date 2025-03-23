@@ -59,7 +59,7 @@ namespace ShakaCoin
 
         static async Task Main(string[] args)
         {
-            await RunPeerNode();
+            await RunBootstrap();
 
         }
     }
