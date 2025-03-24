@@ -29,6 +29,7 @@ namespace ShakaCoin.Networking
         {
             if (!_client.Connected)
             {
+                Close();
                 return new byte[1];
             }
 
@@ -67,7 +68,6 @@ namespace ShakaCoin.Networking
 
         public void Close()
         {
-            _stream?.Close();
             _client.Close();
         }
     }

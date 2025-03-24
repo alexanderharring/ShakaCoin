@@ -58,7 +58,7 @@ namespace ShakaCoin.Networking
 
         private async Task ListenToPeers()
         {
-            while (true)
+            while (_peers.Count > 0)
             {
                 _ = HandlePeer(_bootstrapNode);
 
@@ -92,7 +92,6 @@ namespace ShakaCoin.Networking
         {
             while (true)
             {
-                
 
                 foreach (Peer checkPeer in _peers)
                 {
