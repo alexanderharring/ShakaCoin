@@ -20,10 +20,8 @@ namespace ShakaCoin.Networking
 
         public async Task SendMessage(byte[] msg)
         {
-            if (_client.Connected)
-            {
-                await _stream.WriteAsync(msg, 0, msg.Length);
-            }
+
+            Task t = _stream.WriteAsync(msg, 0, msg.Length);
             
         }
 
