@@ -91,17 +91,17 @@ namespace ShakaCoin.Networking
 
         private async Task CheckThisPeerStatus(Peer checkPeer)
         {
-            Console.WriteLine("A");
-            await checkPeer.SendMessage(Hasher.GetBytesQuick(NetworkConstants.PingCode));
-            Console.WriteLine("B");
+            await checkPeer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.PingCode));
             var res = await checkPeer.ReceiveMessage();
-            Console.WriteLine("C");
 
             if (Hasher.GetHexStringQuick(res) != NetworkConstants.PongCode)
             {
                 Console.WriteLine("Peer @ " + checkPeer.GetIP() + " failed ping test");
                 checkPeer.Close();
                 _peers.Remove(checkPeer);
+            } else
+            {
+                Console.WriteLine("Peer @ " + checkPeer.GetIP() + " passed the ping test");
             }
         }
 

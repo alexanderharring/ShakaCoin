@@ -31,10 +31,10 @@ namespace ShakaCoin.Networking
             Console.WriteLine("Started running P2P server on " + NetworkConstants.Port.ToString());
 
             _ = CheckPeerStatuses();
+            - = ListenToPeers();
 
             while (_running)
             {
-                ListenToPeers();
 
                 var newClient = await _listener.AcceptTcpClientAsync();
 
@@ -56,14 +56,18 @@ namespace ShakaCoin.Networking
             }
         }
 
-        private void ListenToPeers()
+        private async Task ListenToPeers()
         {
-            _ = HandlePeer(_bootstrapNode);
-
-            foreach (Peer p in _peers)
+            while (true)
             {
-                _ = HandlePeer(p);
+                _ = HandlePeer(_bootstrapNode);
+
+                foreach (Peer p in _peers)
+                {
+                    _ = HandlePeer(p);
+                }
             }
+
         }
 
         private async Task HandlePeer(Peer peer)
@@ -79,14 +83,17 @@ namespace ShakaCoin.Networking
             }
             else if (hexCode == NetworkConstants.PingCode)
             {
+                Console.WriteLine("Received ping from " + peer.GetIP());
                 await peer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.PongCode));
-            }
+;           }
         }
 
         private async Task CheckPeerStatuses()
         {
             while (true)
             {
+                
+
                 foreach (Peer checkPeer in _peers)
                 {
                     await CheckThisPeerStatus(checkPeer);
@@ -100,6 +107,7 @@ namespace ShakaCoin.Networking
         {
             await checkPeer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.PingCode));
             var res = await checkPeer.ReceiveMessage();
+
 
             if (Hasher.GetHexStringQuick(res) != NetworkConstants.PongCode)
             {
