@@ -31,7 +31,7 @@ namespace ShakaCoin.Networking
             Console.WriteLine("Started running P2P server on " + NetworkConstants.Port.ToString());
 
             _ = CheckPeerStatuses();
-            - = ListenToPeers();
+            _ = ListenToPeers();
 
             while (_running)
             {
