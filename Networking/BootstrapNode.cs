@@ -79,13 +79,13 @@ namespace ShakaCoin.Networking
         {
             while (true)
             {
+                Console.WriteLine("Checking status of " + _peers.Count + " peers");
                 foreach (Peer checkPeer in _peers)
                 {
                     await CheckThisPeerStatus(checkPeer);
                 }
 
                 await Task.Delay(NetworkConstants.PingDuration);
-                Console.WriteLine("Hree");
             }
         }
 
