@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using ShakaCoin.PaymentData;
 
 namespace ShakaCoin.Networking
 {
@@ -166,7 +167,39 @@ namespace ShakaCoin.Networking
                 {
                     await ConnectToNewPeer(ip);
                 }
-                
+
+            }
+        }
+
+        public async Task DiffuseTransaction(Transaction tx)
+        {
+            byte[] txBytes = tx.GetBytes();
+
+            byte[] message = new byte[txBytes.Length + 3];
+            Buffer.BlockCopy(Hasher.GetBytesFromHexStringQuick(NetworkConstants.TransactionCode), 0, message, 0, 3);
+            Buffer.BlockCopy(txBytes, 0, message, 3, txBytes.Length);
+
+            Peer[] targets = GetNPeers(NetworkConstants.DiffusionNumber);
+
+            foreach (Peer t in targets)
+            {
+                await t.SendMessage(message);
+            }
+        }
+
+        public async Task DiffuseBlock(Block blk)
+        {
+            byte[] blkBytes = blk.GetBlockBytes();
+
+            byte[] message = new byte[blkBytes.Length + 3];
+            Buffer.BlockCopy(Hasher.GetBytesFromHexStringQuick(NetworkConstants.BlockCode), 0, message, 0, 3);
+            Buffer.BlockCopy(blkBytes, 0, message, 3, blkBytes.Length);
+
+            Peer[] targets = GetNPeers(NetworkConstants.DiffusionNumber);
+
+            foreach (Peer t in targets)
+            {
+                await t.SendMessage(message);
             }
         }
 
