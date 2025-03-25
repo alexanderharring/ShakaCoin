@@ -91,14 +91,16 @@ namespace ShakaCoin.Networking
                         if (hexCode == NetworkConstants.GetPeersCode)
                         {
 
-                            string buildPeers = string.Join(",", _peerDict.Keys.ToArray());
+                            byte[] buildPeers = Hasher.GetBytesQuick(string.Join(",", _peerDict.Keys.ToArray()));
 
-                            await peer.SendMessage(Hasher.GetBytesQuick(buildPeers));
+                            byte[] bigArr = new byte[buildPeers.Length + 3];
+                            Buffer.BlockCopy(Hasher.GetBytesFromHexStringQuick(NetworkConstants.GotPeersCode), 0, bigArr, 0, 3);
+                            Buffer.BlockCopy(buildPeers, 0, bigArr, 3, buildPeers.Length);
+
+                            await peer.SendMessage(bigArr);
 
                             Console.WriteLine("Sent list of nodes to " + peer.GetIP());
 
-
-                            await peer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.GetPeersCode));
                         }
 
                         else if (hexCode == NetworkConstants.GotPeersCode)
