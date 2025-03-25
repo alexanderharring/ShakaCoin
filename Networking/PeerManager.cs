@@ -71,7 +71,6 @@ namespace ShakaCoin.Networking
         private async Task HandlePeer(Peer peer)
         {
 
-
             try
             {
                 while (peer.IsConnected())
@@ -87,6 +86,14 @@ namespace ShakaCoin.Networking
                         Buffer.BlockCopy(receivedData, 0, first3Bytes, 0, 3);
 
                         string hexCode = Hasher.GetHexStringQuick(first3Bytes);
+
+                        byte[] otherData = new byte[0];
+
+                        if (receivedData.Length > 3)
+                        {
+                            otherData = new byte[receivedData.Length - 3];
+                            Buffer.BlockCopy(receivedData, 3, otherData, 0, receivedData.Length - 3);
+                        }
 
                         if (hexCode == NetworkConstants.GetPeersCode)
                         {
@@ -105,10 +112,8 @@ namespace ShakaCoin.Networking
 
                         else if (hexCode == NetworkConstants.GotPeersCode)
                         {
-                            byte[] returnedPeerList = new byte[receivedData.Length - 3];
-                            Buffer.BlockCopy(receivedData, 3, returnedPeerList, 0, receivedData.Length - 3);
 
-                            string PeerList = Hasher.GetStringQuick(returnedPeerList);
+                            string PeerList = Hasher.GetStringQuick(otherData);
 
                             string[] ipAds = PeerList.Split(",");
 

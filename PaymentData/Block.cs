@@ -32,6 +32,8 @@ namespace ShakaCoin.PaymentData
 
         public int? BlockSize;
 
+        public OutputBloomFilter addressBF = new OutputBloomFilter();
+
         public Block()
         {
 
