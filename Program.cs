@@ -44,8 +44,11 @@ namespace ShakaCoin
 
         public static async Task RunBootstrap()
         {
-            var bootstrap = new BootstrapNode();
-            await bootstrap.Start();
+            //var bootstrap = new BootstrapNode();
+            //await bootstrap.Start();
+
+            var peerManager = new PeerManager(true);
+            await peerManager.Start();
         }
 
         public static async Task RunPeerNode()
@@ -58,7 +61,7 @@ namespace ShakaCoin
 
         static async Task Main(string[] args)
         {
-            await RunPeerNode();
+            await RunBootstrap();
 
 
         }

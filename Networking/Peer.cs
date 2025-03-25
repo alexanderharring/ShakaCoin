@@ -12,6 +12,8 @@ namespace ShakaCoin.Networking
     {
         private TcpClient _client;
         private NetworkStream _stream => _client.GetStream();
+        private long? _lastPinged;
+        private long? _lastPonged;
 
         public Peer(TcpClient client)
         {
@@ -30,7 +32,7 @@ namespace ShakaCoin.Networking
             if (!_client.Connected)
             {
                 Close();
-                return new byte[1];
+                return null;
             }
 
             byte[] buffer = new byte[4096];
@@ -69,6 +71,36 @@ namespace ShakaCoin.Networking
         public void Close()
         {
             _client.Close();
+        }
+
+        public bool IsConnected()
+        {
+            return _client.Connected;
+        }
+
+        public void SetPinged()
+        {
+            _lastPinged = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        }
+
+        public void SetPonged()
+        {
+            _lastPonged = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        }
+
+        public bool IsDeltaPongAcceptable()
+        {
+            if (_lastPonged is null)
+            {
+                return false;
+            }
+
+            if (_lastPinged is null)
+            {
+                Console.WriteLine("This should not be true...");
+            }
+
+            return ((_lastPonged - _lastPinged) < NetworkConstants.AcceptableWaitPing*1.2);
         }
     }
 }
