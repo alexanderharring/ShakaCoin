@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Microsoft.Testing.Platform.Extensions.Messages;
+using ShakaCoin.Datastructures;
 using ShakaCoin.PaymentData;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -14,8 +16,10 @@ namespace ShakaCoin.Blockchain
         private static string _appName = "ShakaCoin";
         private static string _appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), _appName);
         private static string BlockDir = Path.Combine(_appDataPath, "Blocks");
+        private static string BlockHeaderDir = Path.Combine(_appDataPath, "BlockHeaders");
         private static string OutputsDir = Path.Combine(_appDataPath, "Outputs");
         private static string WalletsDir = Path.Combine(_appDataPath, "Wallets");
+        private static string OutputBFsDir = Path.Combine(_appDataPath, "OutputBFs");
 
         private DatabaseInteraction _outputDB;
 
@@ -55,6 +59,15 @@ namespace ShakaCoin.Blockchain
             {
                 Directory.CreateDirectory(WalletsDir);
             }
+            if (!Directory.Exists(OutputBFsDir))
+            {
+                Directory.CreateDirectory(OutputBFsDir);
+            }
+            if (!Directory.Exists(BlockHeaderDir))
+            {
+                Directory.CreateDirectory(BlockHeaderDir);
+            }
+
 
             _outputDB = new DatabaseInteraction(OutputsDir);
         }
@@ -68,23 +81,119 @@ namespace ShakaCoin.Blockchain
 
             foreach (Transaction tx in block.Transactions)
             {
-                for (int i = 0; i < tx.Outputs.Count;  i++)
-                {
-                    byte[] key = new byte[33];
-
-                    Buffer.BlockCopy(Hasher.Hash256(tx.GetBytes()), 0, key, 0, 32);
-                    key[32] = (byte)i;
-
-                    byte[] value = new byte[44]; // block height (4) + amount (8)
-                    Buffer.BlockCopy(BitConverter.GetBytes(block.BlockHeight), 0, value, 0, 4);
-                    Buffer.BlockCopy(BitConverter.GetBytes(tx.Outputs[i].Amount), 0, value, 4, 8);
-                    Buffer.BlockCopy(tx.Outputs[i].DestinationPublicKey, 0, value, 12, 32);
-
-                    _outputDB.AddValue(key, value);
-
-                    
-                }
+                AddOutpointsToDB(tx, block.BlockHeight);
             }
+        }
+
+        public void AddOutpointsToDB(Transaction tx, uint bHeight)
+        {
+            for (int i = 0; i < tx.Outputs.Count; i++)
+            {
+                byte[] key = new byte[33];
+
+                Buffer.BlockCopy(Hasher.Hash256(tx.GetBytes()), 0, key, 0, 32);
+                key[32] = (byte)i;
+
+                byte[] value = new byte[44]; // block height (4) + amount (8)
+                Buffer.BlockCopy(BitConverter.GetBytes(bHeight), 0, value, 0, 4);
+                Buffer.BlockCopy(BitConverter.GetBytes(tx.Outputs[i].Amount), 0, value, 4, 8);
+                Buffer.BlockCopy(tx.Outputs[i].DestinationPublicKey, 0, value, 12, 32);
+
+                _outputDB.AddValue(key, value);
+
+            }
+        }
+
+        public void WriteHeader(byte[] data, uint bHeight)
+        {
+            if (data.Length != 117)
+            {
+                throw new ArgumentException();
+            }
+            uint fileInd = bHeight / 64;
+            string fName = "h" + fileInd.ToString() + ".dat";
+            string fileP = Path.Combine(BlockHeaderDir, fName);
+
+            if (!(File.Exists(fileP)))
+            {
+                File.Create(fileP);
+
+                File.WriteAllBytes(fileP, new byte[117 * 64]);
+            }
+
+            using (FileStream fs = File.OpenWrite(fileP))
+            {
+                int ind = (int)(bHeight % 64);
+                fs.Write(data, ind, 117);
+            }
+        }
+
+        public byte[] GetHeader(uint bHeight)
+        {
+            uint fileInd = bHeight / 64;
+            string fName = "h" + fileInd.ToString() + ".dat";
+            string fileP = Path.Combine(BlockHeaderDir, fName);
+
+            if (!(File.Exists(fileP)))
+            {
+                return null;
+            }
+
+            using (FileStream fs = File.OpenRead(fileP))
+            {
+                byte[] buffer = new byte[117];
+                int ind = (int)(bHeight % 64);
+                fs.Read(buffer, ind, 117);
+
+                return buffer;
+            }
+
+        }
+
+        public void WriteOutputBF(byte[] data, uint bHeight)
+        {
+            if (data.Length != 128)
+            {
+                throw new ArgumentException();
+            }
+            uint fileInd = bHeight / 64;
+            string fName = "o" + fileInd.ToString() + ".dat";
+            string fileP = Path.Combine(OutputBFsDir, fName);
+
+            if (!(File.Exists(fileP)))
+            {
+                File.Create(fileP);
+
+                File.WriteAllBytes(fileP, new byte[128 * 64]);
+            }
+
+            using (FileStream fs = File.OpenWrite(fileP))
+            {
+                int ind = (int)(bHeight % 64);
+                fs.Write(data, ind, 128);
+            }
+        }
+
+        public byte[] GetOutputBF(uint bHeight)
+        {
+            uint fileInd = bHeight / 64;
+            string fName = "o" + fileInd.ToString() + ".dat";
+            string fileP = Path.Combine(OutputBFsDir, fName);
+
+            if (!(File.Exists(fileP)))
+            {
+                return null;
+            }
+
+            using (FileStream fs = File.OpenRead(fileP))
+            {
+                byte[] buffer = new byte[128];
+                int ind = (int)(bHeight % 64);
+                fs.Read(buffer, ind, 128);
+
+                return buffer;
+            }
+
         }
 
         public static byte[] ReadBlock(uint height)
@@ -101,9 +210,6 @@ namespace ShakaCoin.Blockchain
             {
                 return null;
             }
-
-            
-
         }
 
         public void CheckGenesisBlock()
@@ -177,6 +283,38 @@ namespace ShakaCoin.Blockchain
             string fileP = Path.Combine(WalletsDir, fName);
 
             File.WriteAllBytes(fileP, pk);
+        }
+
+        public ulong GetAccountBalance(byte[] pk, uint maxBH)
+        {
+            ulong bal = 0;
+
+            for (uint i=0; i< maxBH; i++)
+            {
+
+                byte[] obfBytes = GetOutputBF(i);
+                OutputBloomFilter obf = Parser.ParseBloomFilter(obfBytes);
+
+                if (obf.ProbablyContains(pk))
+                {
+
+                    Block blk = Parser.ParseBlock(ReadBlock(i));
+
+                    foreach (Transaction tx in blk.Transactions)
+                    {
+                        foreach (Output ox in tx.Outputs)
+                        {
+                            if (Hasher.GetHexStringQuick(pk) == Hasher.GetHexStringQuick(ox.DestinationPublicKey))
+                            {
+                                bal += ox.Amount;
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            return bal;
         }
 
         public byte[] ReadWallet(string name)

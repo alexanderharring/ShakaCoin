@@ -19,10 +19,14 @@ namespace ShakaCoin.Networking
         public static readonly string TransactionCode = "ABCABC";
         public static readonly string BlockCode = "CABCAB";
         public static readonly string RequestBlock = "CAABBC";
+        public static readonly string ReturnBlock = "CACBBA";
         public static readonly string RequestMerkleProof = "BAACCB";
+        public static readonly string RequestMaxBlockHeight = "CCBABA";
+        public static readonly string ReturnMaxBlockHeight = "CCABAB";
         public static readonly int PingDuration = 3000;
         public static readonly int AcceptableWaitPing = 800;
-        public static readonly int DiffusionNumber = 3;
+        public static readonly int DiffusionNumber = 2;
+        public static readonly byte HopCount = 3;
         
 
     }

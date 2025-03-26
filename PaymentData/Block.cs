@@ -32,8 +32,6 @@ namespace ShakaCoin.PaymentData
 
         public int? BlockSize;
 
-        public OutputBloomFilter addressBF = new OutputBloomFilter();
-
         public Block()
         {
 
@@ -44,6 +42,7 @@ namespace ShakaCoin.PaymentData
         public void AddTransaction(Transaction newTx)
         {
             Transactions.Add(newTx);
+
 
         }
 
@@ -170,6 +169,7 @@ namespace ShakaCoin.PaymentData
                 foreach (Output ox in tx.Outputs)
                 {
                     amountOut += ox.Amount;
+
                 }
 
                 if (amountOut > amountIn)

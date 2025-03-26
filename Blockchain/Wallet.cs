@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ShakaCoin.PaymentData;
 
 namespace ShakaCoin.Blockchain
 {
@@ -53,6 +54,13 @@ namespace ShakaCoin.Blockchain
         public static bool VerifyPublicKey(byte[] publicKey)
         {
             return HomeKeys.VerifyPublicKey(publicKey);
+        }
+
+        public Transaction GenerateTransaction(byte[] pubK, ulong mainAmount, ulong minerFee)
+        {
+            Transaction buildTx = new Transaction(0x00);
+
+            Output buildOX = new Output(mainAmount, pubK);
         }
     }
 

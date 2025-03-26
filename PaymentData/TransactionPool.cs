@@ -28,16 +28,38 @@ namespace ShakaCoin.PaymentData
                 return new List<Transaction>();
             } else
             {
-                List<Transaction> txn = _TXroot.GetNBytesOfTransactions(maxTXSize - txPoolSize);
+                List<Transaction> txn = _TXroot.GetNTransactions(200);
+
+                List<Transaction> acceptedTX = new List<Transaction>();
+
+                int sizeSum = 0;
 
                 foreach (Transaction t in txn)
+                {
+                    sizeSum += t.GetBytes().Length;
+
+                    if (sizeSum < maxTXSize)
+                    {
+                        acceptedTX.Add(t);
+                    } else
+                    {
+                        break;
+                    }
+                }
+
+                foreach (Transaction t in acceptedTX)
                 {
                     _TXroot.Delete(t);
                     txPoolSize -= t.GetBytes().Length;
                 }
 
-                return txn;
+                return acceptedTX;
             }
+        }
+
+        public int GetTxPoolSize()
+        {
+            return txPoolSize;
         }
 
         public void AddTx(Transaction nTX)

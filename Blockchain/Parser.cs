@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ShakaCoin.Datastructures;
 using ShakaCoin.PaymentData;
 
 namespace ShakaCoin.Blockchain
@@ -42,6 +44,15 @@ namespace ShakaCoin.Blockchain
             ix.AddSignature(sig);
 
             return ix;
+        }
+
+        public static OutputBloomFilter ParseBloomFilter(byte[] data)
+        {
+            OutputBloomFilter bloomFilter = new OutputBloomFilter();
+
+            BitArray bt = new BitArray(data);
+            bloomFilter.BitArray = bt;
+            return bloomFilter;
         }
 
         public static Transaction ParseTransaction(byte[] data)

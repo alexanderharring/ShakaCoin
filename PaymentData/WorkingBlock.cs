@@ -14,8 +14,6 @@ namespace ShakaCoin.PaymentData
 
         public byte[] BlockHeader = new byte[117];
 
-        public OutputBloomFilter AddressBF;
-
         private ulong? _feeSum;
 
         public MerkleNode? MerkleRootNode;
@@ -31,7 +29,6 @@ namespace ShakaCoin.PaymentData
             MiningIncrement = blck.MiningIncrement;
             Transactions = blck.Transactions;
 
-            AddressBF = new OutputBloomFilter();
         }
 
         public void OverWriteIncrement()

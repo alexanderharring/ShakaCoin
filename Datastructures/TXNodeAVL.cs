@@ -277,10 +277,10 @@ namespace ShakaCoin.Datastructures
             return OutputBloomFilter.GetHashIndexStatic(Value.GetBytes(), int.MaxValue);
         }
 
-        public List<Transaction> GetNBytesOfTransactions(int N)
+        public List<Transaction> GetNTransactions(int N)
         {
             List<Transaction> txList = new List<Transaction>();
-            this.TraulTransactionsReverse(txList, 0, N);
+            this.TraulTransactionsReverse(txList, N);
 
             return txList;
 
@@ -308,23 +308,21 @@ namespace ShakaCoin.Datastructures
                 Left.ReverseInOrder();
             }
         }
-        private void TraulTransactionsReverse(List<Transaction> txList, int bCount, int mCount)
+        private void TraulTransactionsReverse(List<Transaction> txList, int maxN)
         {
-            if (bCount >= mCount)
+            if (txList.Count >= maxN)
             {
                 return;
             }
 
             if (!(Right is null))
             {
-                Right.TraulTransactionsReverse(txList, bCount, mCount);
+                Right.TraulTransactionsReverse(txList, maxN);
             }
 
-            int dL = Value.GetBytes().Length;
-            if (bCount + dL < mCount)
+            if (txList.Count < maxN)
             {
                 txList.Add(Value);
-                bCount += dL;
             } else
             {
                 return;
@@ -334,7 +332,7 @@ namespace ShakaCoin.Datastructures
 
             if (!(Left is null))
             {
-                Left.TraulTransactionsReverse(txList, bCount, mCount);
+                Left.TraulTransactionsReverse(txList, maxN);
             }
 
         }

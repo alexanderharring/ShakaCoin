@@ -10,7 +10,7 @@ namespace ShakaCoin.Datastructures
 {
     public class OutputBloomFilter : IBloomFilter
     {
-        public int Size => 512*2;
+        public int Size => 1024;
         public int HashFunctions => 3;
         public BitArray BitArray { get; set; }
 
@@ -78,6 +78,14 @@ namespace ShakaCoin.Datastructures
         public bool ProbablyContains(string data)
         {
             return ProbablyContains(System.Text.Encoding.UTF8.GetBytes(data));
+        }
+
+        public byte[] GetBytes()
+        {
+            byte[] m = new byte[Size/8];
+            BitArray.CopyTo(m, 0);
+
+            return m;
         }
 
     }

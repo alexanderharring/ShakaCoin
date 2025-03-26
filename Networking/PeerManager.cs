@@ -19,6 +19,7 @@ namespace ShakaCoin.Networking
         private Peer? _bootstrapNode;
         private bool _amIBootstrap = false;
         private bool _running;
+        public BlockchainHandler? _blockchainHandler;
 
         public PeerManager()
         {
@@ -136,11 +137,66 @@ namespace ShakaCoin.Networking
 
                             Console.WriteLine("Received ping from " + peer.GetIP());
                             await peer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.PongCode));
-                            
+
                         }
                         else if (hexCode == NetworkConstants.PongCode)
                         {
                             peer.SetPonged();
+
+                        }
+                        else if (hexCode == NetworkConstants.TransactionCode)
+                        {
+                            byte[] tx = new byte[otherData.Length - 1];
+                            Buffer.BlockCopy(otherData, 0, tx, 0, otherData.Length - 1);
+
+                            _blockchainHandler.LoadTransaction(tx, otherData[otherData.Length - 1]);
+
+                        }
+                        else if (hexCode == NetworkConstants.BlockCode)
+                        {
+                            byte[] bk = new byte[otherData.Length - 1];
+                            Buffer.BlockCopy(otherData, 0, bk, 0, otherData.Length - 1);
+
+                            _blockchainHandler.LoadBlock(bk, otherData[otherData.Length - 1]);
+
+                        }
+                        else if (hexCode == NetworkConstants.RequestMaxBlockHeight)
+                        {
+
+                            byte[] heightDat = BitConverter.GetBytes(_blockchainHandler.GetBlockHeight());
+                            byte[] bigArr = new byte[7];
+
+                            Buffer.BlockCopy(Hasher.GetBytesFromHexStringQuick(NetworkConstants.ReturnMaxBlockHeight), 0, bigArr, 0, 3);
+                            Buffer.BlockCopy(heightDat, 0, bigArr, 3, 4);
+
+                            await peer.SendMessage(bigArr);
+                        }
+                        else if (hexCode == NetworkConstants.ReturnMaxBlockHeight)
+                        {
+                            uint maxH = BitConverter.ToUInt32(otherData);
+
+                            for (uint blockCount=_blockchainHandler.GetBlockHeight()+1; blockCount <= maxH; blockCount++)
+                            {
+                                byte[] heightDat = BitConverter.GetBytes(blockCount);
+                                byte[] bigArr = new byte[7];
+
+                                Buffer.BlockCopy(Hasher.GetBytesFromHexStringQuick(NetworkConstants.RequestBlock), 0, bigArr, 0, 3);
+                                Buffer.BlockCopy(heightDat, 0, bigArr, 3, 4);
+
+                                await peer.SendMessage(bigArr);
+                            }
+                        }
+                        else if (hexCode == NetworkConstants.ReturnMaxBlockHeight)
+                        {
+                            uint maxH = BitConverter.ToUInt32(otherData);
+
+                            byte[] dataM = FileManagement.ReadBlock(maxH);
+
+                            byte[] bigArr = new byte[dataM.Length + 3];
+                            Buffer.BlockCopy(Hasher.GetBytesFromHexStringQuick(NetworkConstants.ReturnBlock), 0, bigArr, 0, 3);
+                            Buffer.BlockCopy(dataM, 0, bigArr, 3, dataM.Length);
+
+                            await peer.SendMessage(bigArr);
                         }
                     }
                 }
@@ -235,13 +291,14 @@ namespace ShakaCoin.Networking
             await newPeer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.GetPeersCode));
         }
 
-        public async Task DiffuseTransaction(Transaction tx)
+        public async Task DiffuseTransaction(Transaction tx, byte hopCount)
         {
             byte[] txBytes = tx.GetBytes();
 
-            byte[] message = new byte[txBytes.Length + 3];
+            byte[] message = new byte[txBytes.Length + 4];
             Buffer.BlockCopy(Hasher.GetBytesFromHexStringQuick(NetworkConstants.TransactionCode), 0, message, 0, 3);
             Buffer.BlockCopy(txBytes, 0, message, 3, txBytes.Length);
+            message[txBytes.Length + 3] = hopCount;
 
             Peer[] targets = GetNPeers(NetworkConstants.DiffusionNumber);
 
@@ -251,13 +308,14 @@ namespace ShakaCoin.Networking
             }
         }
 
-        public async Task DiffuseBlock(Block blk)
+        public async Task DiffuseBlock(Block blk, byte hopCount)
         {
             byte[] blkBytes = blk.GetBlockBytes();
 
-            byte[] message = new byte[blkBytes.Length + 3];
+            byte[] message = new byte[blkBytes.Length + 4];
             Buffer.BlockCopy(Hasher.GetBytesFromHexStringQuick(NetworkConstants.BlockCode), 0, message, 0, 3);
             Buffer.BlockCopy(blkBytes, 0, message, 3, blkBytes.Length);
+            message[blkBytes.Length + 3] = hopCount;
 
             Peer[] targets = GetNPeers(NetworkConstants.DiffusionNumber);
 
