@@ -61,6 +61,28 @@ namespace ShakaCoin.Blockchain
             Transaction buildTx = new Transaction(0x00);
 
             Output buildOX = new Output(mainAmount, pubK);
+
+            List<(Input, byte[])> inputList = FileManagement.Instance.GetInputsForTransaction(GetPublicKey(), mainAmount);
+            if (inputList is null)
+            {
+                return null;
+            }
+
+            foreach ((Input, byte[]) input in inputList)
+            {
+                input.Item1.AddSignature(SignData(input.Item2));
+
+                buildTx.AddInput(input.Item1);
+            }
+
+
+            ulong returnAmt = mainAmount - minerFee;
+            buildTx.AddOutput(buildOX);
+
+            Output rx = new Output(returnAmt, GetPublicKey());
+            buildTx.AddOutput(rx);
+
+            return buildTx;
         }
     }
 

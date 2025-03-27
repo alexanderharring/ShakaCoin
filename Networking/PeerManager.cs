@@ -163,7 +163,7 @@ namespace ShakaCoin.Networking
                         else if (hexCode == NetworkConstants.RequestMaxBlockHeight)
                         {
 
-                            byte[] heightDat = BitConverter.GetBytes(_blockchainHandler.GetBlockHeight());
+                            byte[] heightDat = BitConverter.GetBytes(FileManagement.Instance.maxBlockNum);
                             byte[] bigArr = new byte[7];
 
                             Buffer.BlockCopy(Hasher.GetBytesFromHexStringQuick(NetworkConstants.ReturnMaxBlockHeight), 0, bigArr, 0, 3);
@@ -175,7 +175,7 @@ namespace ShakaCoin.Networking
                         {
                             uint maxH = BitConverter.ToUInt32(otherData);
 
-                            for (uint blockCount=_blockchainHandler.GetBlockHeight()+1; blockCount <= maxH; blockCount++)
+                            for (uint blockCount=(FileManagement.Instance.maxBlockNum)+1; blockCount <= maxH; blockCount++)
                             {
                                 byte[] heightDat = BitConverter.GetBytes(blockCount);
                                 byte[] bigArr = new byte[7];

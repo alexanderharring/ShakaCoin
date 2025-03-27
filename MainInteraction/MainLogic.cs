@@ -50,9 +50,10 @@ namespace ShakaCoin.MainInteraction
 
             //_ = RunPeerNode();
             _blockchainHandler = new BlockchainHandler(_isValidatorNode);
+            _blockchainHandler.MinerPubKey = _wallet.GetPublicKey();
             _blockchainHandler.CheckBlockchain();
 
-            MainLoop();
+            MainLoopAsync();
 
             
 
@@ -170,7 +171,7 @@ namespace ShakaCoin.MainInteraction
         }
 
 
-        private void MainLoop()
+        private void MainLoopAsync()
         {
             bool running = true;
 
@@ -206,7 +207,7 @@ namespace ShakaCoin.MainInteraction
 
                             if (inputTwo.ToLower()[0] == 'y')
                             {
-                                ulong bal = _fm.GetAccountBalance(_wallet.GetPublicKey(), _blockchainHandler.GetBlockHeight());
+                                ulong bal = _fm.GetAccountBalance(_wallet.GetPublicKey());
                                 UtilConsole.ClearScreen();
                                 DisplayWalletData();
                                 Console.WriteLine("Your account balance is: " + bal.ToString());
@@ -237,7 +238,7 @@ namespace ShakaCoin.MainInteraction
 
                                 }
 
-                                ulong bal = _fm.GetAccountBalance(pk, _blockchainHandler.GetBlockHeight());
+                                ulong bal = _fm.GetAccountBalance(pk);
 
                                 Console.WriteLine("Account balance: " + bal.ToString() + " of " + Hasher.GetHexStringQuick(pk));
                                 Console.ReadLine();
@@ -299,6 +300,16 @@ namespace ShakaCoin.MainInteraction
                                             {
                                                 Console.WriteLine("Sending transaction...");
                                                 Transaction generatedTransaction = _wallet.GenerateTransaction(pubKbytes, res, feeAmount);
+
+                                                if (generatedTransaction is null)
+                                                {
+                                                    Console.WriteLine("Could not form a transaction.");
+                                                } else
+                                                {
+                                                    Console.WriteLine("YAY");
+                                                }
+
+                                                Console.ReadLine();
                                                 
                                             } else
                                             {
@@ -332,6 +343,7 @@ namespace ShakaCoin.MainInteraction
                         uint blockInd = 0;
                         UtilConsole.ClearScreen();
                         DisplayWalletData();
+                        _blockchainHandler.CheckBlockchain();
                         while (!(FileManagement.ReadBlock(blockInd) is null))
                         {
                             Block blk = Parser.ParseBlock(FileManagement.ReadBlock(blockInd));
@@ -394,7 +406,14 @@ namespace ShakaCoin.MainInteraction
 
                     else if (line.ToLower()[0] == 'm') // start mining
                     {
-                        _blockchainHandler.SetMining(true);
+                        UtilConsole.ClearScreen();
+                        DisplayWalletData();
+
+                        _blockchainHandler.SetMiningAsync(true);
+
+                        string? inpt = Console.ReadLine();
+                        _blockchainHandler.SetMiningAsync(false);
+                        Console.ReadLine();
                     }
 
                     else if (line.ToLower()[0] == 'q') // swap

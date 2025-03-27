@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.Testing.Platform.Extensions.Messages;
@@ -24,6 +26,8 @@ namespace ShakaCoin.Blockchain
         private DatabaseInteraction _outputDB;
 
         private static FileManagement _FileManagement;
+
+        public uint maxBlockNum = 0;
 
         public static FileManagement Instance
         {
@@ -94,7 +98,7 @@ namespace ShakaCoin.Blockchain
                 Buffer.BlockCopy(Hasher.Hash256(tx.GetBytes()), 0, key, 0, 32);
                 key[32] = (byte)i;
 
-                byte[] value = new byte[44]; // block height (4) + amount (8)
+                byte[] value = new byte[44]; // block height (4) + amount (8) + pub key ( 32 ) 
                 Buffer.BlockCopy(BitConverter.GetBytes(bHeight), 0, value, 0, 4);
                 Buffer.BlockCopy(BitConverter.GetBytes(tx.Outputs[i].Amount), 0, value, 4, 8);
                 Buffer.BlockCopy(tx.Outputs[i].DestinationPublicKey, 0, value, 12, 32);
@@ -102,6 +106,64 @@ namespace ShakaCoin.Blockchain
                 _outputDB.AddValue(key, value);
 
             }
+        }
+
+        public void ClearInputsFromDB(Transaction tx)
+        {
+            foreach (Input ix in tx.Inputs)
+            {
+                _outputDB.RemoveValue(ix.Outpoint);
+            }
+        }
+
+        public List<(Input, byte[])> GetInputsForTransaction(byte[] pubkey, ulong amountReq)
+        {
+            ulong bal = 0;
+            List<(Input, byte[])> inputList = new List<(Input, byte[])>();
+
+            for (uint i = 0; i < maxBlockNum; i++)
+            {
+
+                byte[] obfBytes = GetOutputBF(i);
+                OutputBloomFilter obf = Parser.ParseBloomFilter(obfBytes);
+
+                if (obf.ProbablyContains(pubkey))
+                {
+
+                    Block blk = Parser.ParseBlock(ReadBlock(i));
+
+                    foreach (Transaction tx in blk.Transactions)
+                    {
+
+                        for (int oxI = 0; oxI < tx.Outputs.Count; oxI++)
+                        {
+                            if (Hasher.GetHexStringQuick(pubkey) == Hasher.GetHexStringQuick(tx.Outputs[oxI].DestinationPublicKey))
+                            {
+                                byte[] key = new byte[33];
+
+                                Buffer.BlockCopy(Hasher.Hash256(tx.GetBytes()), 0, key, 0, 32);
+                                key[32] = (byte)i;
+
+                                if (!(DBGetValue(key) is null))
+                                {
+                                    bal += tx.Outputs[oxI].Amount;
+                                    Input newInput = new Input(Hasher.Hash256(tx.GetBytes()), (byte)oxI);
+                                    inputList.Add((newInput, key));
+
+                                    if (bal > amountReq)
+                                    {
+                                        return inputList;
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+                }
+            }
+
+            return null;
         }
 
         public void WriteHeader(byte[] data, uint bHeight)
@@ -160,17 +222,13 @@ namespace ShakaCoin.Blockchain
             string fName = "o" + fileInd.ToString() + ".dat";
             string fileP = Path.Combine(OutputBFsDir, fName);
 
-            if (!(File.Exists(fileP)))
-            {
-                File.Create(fileP);
-
-                File.WriteAllBytes(fileP, new byte[128 * 64]);
-            }
+            File.WriteAllBytes(fileP, new byte[8192]);
 
             using (FileStream fs = File.OpenWrite(fileP))
             {
                 int ind = (int)(bHeight % 64);
-                fs.Write(data, ind, 128);
+                fs.Position = ind * 128;
+                fs.Write(data, 0, 128);
             }
         }
 
@@ -189,7 +247,8 @@ namespace ShakaCoin.Blockchain
             {
                 byte[] buffer = new byte[128];
                 int ind = (int)(bHeight % 64);
-                fs.Read(buffer, ind, 128);
+                fs.Position = ind * 128;
+                fs.Read(buffer, 0, 128);
 
                 return buffer;
             }
@@ -285,16 +344,16 @@ namespace ShakaCoin.Blockchain
             File.WriteAllBytes(fileP, pk);
         }
 
-        public ulong GetAccountBalance(byte[] pk, uint maxBH)
+        public ulong GetAccountBalance(byte[] pk)
         {
             ulong bal = 0;
 
-            for (uint i=0; i< maxBH; i++)
+            for (uint i=0; i<= maxBlockNum; i++)
             {
 
                 byte[] obfBytes = GetOutputBF(i);
                 OutputBloomFilter obf = Parser.ParseBloomFilter(obfBytes);
-
+                // this is bugging
                 if (obf.ProbablyContains(pk))
                 {
 
@@ -306,6 +365,7 @@ namespace ShakaCoin.Blockchain
                         {
                             if (Hasher.GetHexStringQuick(pk) == Hasher.GetHexStringQuick(ox.DestinationPublicKey))
                             {
+                                Console.WriteLine(i);
                                 bal += ox.Amount;
                             }
                         }

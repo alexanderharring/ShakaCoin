@@ -2,6 +2,7 @@
 using ShakaCoin.Datastructures;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
@@ -17,6 +18,8 @@ namespace ShakaCoin.PaymentData
         private ulong? _feeSum;
 
         public MerkleNode? MerkleRootNode;
+
+        public Stopwatch StopWatch = new Stopwatch();
 
         public WorkingBlock(Block blck)
         {
@@ -36,31 +39,6 @@ namespace ShakaCoin.PaymentData
             byte[] miningIncBytes = BitConverter.GetBytes(MiningIncrement);
 
             Array.Copy(miningIncBytes, 0, BlockHeader, 109, 8);
-        }
-
-        public void SetHeader()
-        {
-
-            // order -> height (4) + version (1) + timestamp (8) + prev hash (32) + merkle root (32) + target ( 32 ) + mining increment (8)
-            byte[] headerBuild = new byte[117];
-
-            byte[] heightBytes = BitConverter.GetBytes(BlockHeight);
-
-            Array.Copy(heightBytes, 0, headerBuild, 0, 4);
-
-            heightBytes[4] = Version;
-
-            byte[] timeBytes = BitConverter.GetBytes(TimeStamp);
-            Array.Copy(timeBytes, 0, headerBuild, 5, 8);
-
-            Array.Copy(PreviousBlockHash, 0, headerBuild, 13, 32);
-            Array.Copy(MerkleRoot, 0, headerBuild, 45, 32);
-            Array.Copy(Target, 0, headerBuild, 77, 32);
-
-            byte[] miningIncBytes = BitConverter.GetBytes(MiningIncrement);
-            Array.Copy(Target, 0, headerBuild, 109, 8);
-
-            BlockHeader = headerBuild;
         }
 
         public void GenerateMerkleRoot()

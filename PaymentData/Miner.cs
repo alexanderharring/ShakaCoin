@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using ShakaCoin.Blockchain;
+using ShakaCoin.MainInteraction;
 
 namespace ShakaCoin.PaymentData
 {
@@ -12,64 +13,107 @@ namespace ShakaCoin.PaymentData
     {
 
         private WorkingBlock _candidateBlock;
-        private CancellationTokenSource _miningCancel = new();
+        private bool _shouldBeMining = false;
+        public Block ExtractBlock;
 
         public Miner()
         {
             _candidateBlock = new WorkingBlock(new Block());
         }
 
-        public async Task StartMining()
+        public async Task StartMining(List<Transaction> txList, byte[] minerPubKey)
         {
-            Block tBlock = GenesisBlock.MakeGenesisBlock();
+            Block prevBlock = Parser.ParseBlock(FileManagement.ReadBlock(FileManagement.Instance.maxBlockNum-1));
+
+            Block tBlock = new Block();
+            tBlock.SetTimeStamp();
+            tBlock.BlockHeight = FileManagement.Instance.maxBlockNum;
+            tBlock.Version = 0x00;
+
+            tBlock.Target = prevBlock.Target;
+
+            //byte[] Target = new byte[32];
+            //Target[4] = 0xF0;
+            //tBlock.Target = Target;
+
+            tBlock.PreviousBlockHash = prevBlock.GetBlockHash();
+
+            Transaction genesisTransaction = new Transaction(0b10000000);
+
+            Input ix = new Input(new byte[32], 0xFF);
+
+            byte[] fakeSignature = new byte[64];
+            byte[] copySource = Hasher.GetBytesQuick("This is the coinbase transaction of the genesis block. :)");
+            Array.Copy(copySource, fakeSignature, copySource.Length);
+
+            ix.AddSignature(fakeSignature);
+            genesisTransaction.AddInput(ix);
+
+            Output ox = new Output(256, minerPubKey);
+
+            genesisTransaction.AddOutput(ox);
+
+            tBlock.AddTransaction(genesisTransaction);
+
+            foreach (Transaction tx in txList)
+            {
+                tBlock.AddTransaction(tx);
+            }
+
             _candidateBlock = new WorkingBlock(tBlock);
+            _candidateBlock.GenerateMerkleRoot();
+
+            tBlock.MerkleRoot = _candidateBlock.MerkleRoot;
 
             Console.WriteLine("Started mining...");
+            Console.WriteLine("Press [Enter] to stop mining.");
 
-            while (!(_miningCancel.IsCancellationRequested))
-            {
-                MineBlock();
-                await Task.Delay(150);
-            }
+            _candidateBlock.StopWatch.Start();
+
+            _shouldBeMining = true;
+
+            _ = Task.Run(async () => await MineBlock());
+
         }
 
-        private void MineBlock()
+        private async Task MineBlock()
         {
-            while (!(_miningCancel.IsCancellationRequested))
+            ulong k = 1000000;
+            while (_shouldBeMining)
             {
+                if ((_candidateBlock.MiningIncrement % k) == 0)
+                {
+                    _candidateBlock.StopWatch.Stop();
+                    var elapsed = _candidateBlock.StopWatch.Elapsed.TotalSeconds;
+
+                    Console.Write("\rCurrent Increment: " + _candidateBlock.MiningIncrement.ToString() + " Hash Rate: " + Math.Round(k / elapsed, 1).ToString() + " hash/sec");
+                    _candidateBlock.StopWatch.Restart();
+                }
+
                 _candidateBlock.MiningIncrement++;
-                _candidateBlock.OverWriteIncrement();
 
                 byte[] headerHash = _candidateBlock.GetBlockHash();  
 
-                if (ShouldAcceptHash(headerHash, _candidateBlock.Target))
+                if (Hasher.IsByteArrayLarger(_candidateBlock.Target, headerHash))
                 {
-                    Console.WriteLine("Mined block!!");
+                    Block perfectBlock = (Block)_candidateBlock;
+                    perfectBlock.MiningIncrement = _candidateBlock.MiningIncrement;
+
+                    FileManagement.Instance.WriteBlock(perfectBlock);
+
+                    Console.WriteLine("\nMined block!! @ Increment " + _candidateBlock.MiningIncrement.ToString());
+                    Console.WriteLine(Hasher.GetHexStringQuick(headerHash));
                     StopMining();
                 }
             }
         }
 
-        private bool ShouldAcceptHash(byte[] hdrHash, byte[] target)
-        {
-            for (int i = 0; i < target.Length; i++)
-            {
-                if (hdrHash[i] < target[i])
-                {
-                    return false;
-                }
-                if (hdrHash[i] > target[i])
-                {
-                    return true;
-                }
-            }
-            return true;
-        } 
+
 
         public void StopMining()
         {
-            Console.WriteLine("Stopped mining...");
-            _miningCancel.Cancel();
+            Console.WriteLine("\nStopped mining...");
+            _shouldBeMining = false;
         }
     }
 }

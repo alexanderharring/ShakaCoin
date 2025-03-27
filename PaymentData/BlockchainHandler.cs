@@ -20,6 +20,7 @@ namespace ShakaCoin.PaymentData
         private bool _isMining = false;
 
         public PeerManager? _peerManager;
+        public byte[] MinerPubKey = new byte[32];
 
         public BlockchainHandler(bool isValidator)
         {
@@ -56,6 +57,7 @@ namespace ShakaCoin.PaymentData
                     foreach (Transaction tx in blk.Transactions)
                     {
                         _fm.AddOutpointsToDB(tx, blk.BlockHeight);
+                        _fm.ClearInputsFromDB(tx);
 
                         foreach (Output ox in tx.Outputs)
                         {
@@ -65,14 +67,11 @@ namespace ShakaCoin.PaymentData
 
                     _fm.WriteOutputBF(obf.GetBytes(), blk.BlockHeight);
                     _currentBlockHeight++;
+                    _fm.maxBlockNum = _currentBlockHeight;
                 }
             }
         }
 
-        public uint GetBlockHeight()
-        {
-            return _currentBlockHeight;
-        }
 
         public void LoadBlock(byte[] data, byte hopCount)
         {
@@ -155,17 +154,22 @@ namespace ShakaCoin.PaymentData
 
         }
 
-        public async void SetMining(bool isMining)
+        public void SetMiningAsync(bool isMining)
         {
-            _isMining = isMining;
-
-            if (_isMining)
+            
+            if (isMining)
             {
-                _ = _miner.StartMining();
+                _isMining = isMining;
+                List<Transaction> tx = _txPool.GetCandidateTransactions();
+                _miner.StartMining(tx, MinerPubKey);
 
-                await Task.Delay(4000);
-
-                _miner.StopMining();
+            } else
+            {
+                if (_isMining)
+                {
+                    _miner.StopMining();
+                }
+                _isMining = isMining;
             }
 
         }
