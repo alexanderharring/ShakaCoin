@@ -188,6 +188,8 @@ namespace ShakaCoin.MainInteraction
 
                 _peerManager._isOnNetworkDebug = false;
 
+                _blockchainHandler.CheckBlockchain();
+
                 string? line = Console.ReadLine();
 
                 if (line != null && line.Length > 0)
@@ -365,7 +367,7 @@ namespace ShakaCoin.MainInteraction
                         uint blockInd = 0;
                         UtilConsole.ClearScreen();
                         DisplayWalletData();
-                        _blockchainHandler.CheckBlockchain();
+                        
                         while (!(FileManagement.ReadBlock(blockInd) is null))
                         {
                             Block blk = Parser.ParseBlock(FileManagement.ReadBlock(blockInd));

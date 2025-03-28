@@ -22,6 +22,8 @@ namespace ShakaCoin.PaymentData
         public PeerManager? _peerManager;
         public byte[] MinerPubKey = new byte[32];
 
+        private HashSet<uint> _checkedBlocks = new HashSet<uint>();
+
         public BlockchainHandler(bool isValidator)
         {
             _isValidator = isValidator;
@@ -51,21 +53,27 @@ namespace ShakaCoin.PaymentData
                 }
                 else
                 {
-                    Block blk = Parser.ParseBlock(dta);
-                    OutputBloomFilter obf = new OutputBloomFilter();
-
-                    foreach (Transaction tx in blk.Transactions)
+                    if (!_checkedBlocks.Contains(_currentBlockHeight))
                     {
-                        _fm.AddOutpointsToDB(tx, blk.BlockHeight);
-                        _fm.ClearInputsFromDB(tx);
+                        Block blk = Parser.ParseBlock(dta);
+                        OutputBloomFilter obf = new OutputBloomFilter();
 
-                        foreach (Output ox in tx.Outputs)
+                        foreach (Transaction tx in blk.Transactions)
                         {
-                            obf.AddItem(ox.DestinationPublicKey);
-                        }
-                    }
+                            _fm.AddOutpointsToDB(tx, blk.BlockHeight);
+                            _fm.ClearInputsFromDB(tx);
 
-                    _fm.WriteOutputBF(obf.GetBytes(), blk.BlockHeight);
+                            foreach (Output ox in tx.Outputs)
+                            {
+                                obf.AddItem(ox.DestinationPublicKey);
+                            }
+                        }
+
+                        _fm.WriteOutputBF(obf.GetBytes(), blk.BlockHeight);
+
+                        _checkedBlocks.Add(_currentBlockHeight);
+                    }
+                    
                     _currentBlockHeight++;
                     _fm.maxBlockNum = _currentBlockHeight;
                 }
