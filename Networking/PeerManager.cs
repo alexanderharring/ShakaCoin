@@ -192,21 +192,21 @@ namespace ShakaCoin.Networking
 
                             if (maxH > FileManagement.Instance.maxBlockNum)
                             {
-                                Console.WriteLine("UH OH");
+                                for (uint blockCount = (FileManagement.Instance.maxBlockNum); blockCount <= (maxH-1); blockCount++)
+                                {
+                                    byte[] heightDat = BitConverter.GetBytes(blockCount);
+                                    byte[] bigArr = new byte[7];
+
+                                    Buffer.BlockCopy(Hasher.GetBytesFromHexStringQuick(NetworkConstants.RequestBlock), 0, bigArr, 0, 3);
+                                    Buffer.BlockCopy(heightDat, 0, bigArr, 3, 4);
+
+                                    await peer.SendMessage(bigArr);
+                                }
                             }
 
-                            for (uint blockCount=(FileManagement.Instance.maxBlockNum)+1; blockCount <= maxH; blockCount++)
-                            {
-                                byte[] heightDat = BitConverter.GetBytes(blockCount);
-                                byte[] bigArr = new byte[7];
-
-                                Buffer.BlockCopy(Hasher.GetBytesFromHexStringQuick(NetworkConstants.RequestBlock), 0, bigArr, 0, 3);
-                                Buffer.BlockCopy(heightDat, 0, bigArr, 3, 4);
-
-                                await peer.SendMessage(bigArr);
-                            }
+                            
                         }
-                        else if (hexCode == NetworkConstants.ReturnMaxBlockHeight)
+                        else if (hexCode == NetworkConstants.RequestBlock)
                         {
                             uint maxH = BitConverter.ToUInt32(otherData);
 
@@ -217,6 +217,14 @@ namespace ShakaCoin.Networking
                             Buffer.BlockCopy(dataM, 0, bigArr, 3, dataM.Length);
 
                             await peer.SendMessage(bigArr);
+                        }
+
+                        else if (hexCode == NetworkConstants.ReturnBlock) {
+                            
+                            Block builtBlock = Parser.ParseBlock(otherData);
+
+                            Console.WriteLine("Building block " +  builtBlock.BlockHeight.ToString());
+                            FileManagement.Instance.WriteBlock(builtBlock);
                         }
                     }
                 }
@@ -252,7 +260,7 @@ namespace ShakaCoin.Networking
             {
                 foreach (Peer checkPeer in _peerDict.Values)
                 {
-                    _ = checkPeer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.PongCode));
+                    _ = checkPeer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.RequestMaxBlockHeight));
                 }
 
                 await Task.Delay(NetworkConstants.ChainUpdate);
