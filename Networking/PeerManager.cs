@@ -21,6 +21,8 @@ namespace ShakaCoin.Networking
         private bool _running;
         public BlockchainHandler? _blockchainHandler;
 
+        public bool _isOnNetworkDebug = false;
+
         public PeerManager()
         {
             _listener = new TcpListener(IPAddress.Any, NetworkConstants.Port);
@@ -60,8 +62,11 @@ namespace ShakaCoin.Networking
                     continue;
                 }
 
-
-                Console.WriteLine("Accepted connection to new peer @ " + newPeer.GetIP());
+                if (_isOnNetworkDebug)
+                {
+                    Console.WriteLine("Accepted connection to new peer @ " + newPeer.GetIP());
+                }
+                        
 
                 _peerDict[newPeer.GetIP()] = newPeer;
 
@@ -107,7 +112,11 @@ namespace ShakaCoin.Networking
 
                             await peer.SendMessage(bigArr);
 
-                            Console.WriteLine("Sent list of nodes to " + peer.GetIP());
+                            if (_isOnNetworkDebug)
+                            {
+                                Console.WriteLine("Sent list of nodes to " + peer.GetIP());
+                            }
+                                
 
                         }
 
@@ -134,8 +143,11 @@ namespace ShakaCoin.Networking
 
                         else if (hexCode == NetworkConstants.PingCode)
                         {
-
-                            Console.WriteLine("Received ping from " + peer.GetIP());
+                            if (_isOnNetworkDebug)
+                            {
+                                Console.WriteLine("Received ping from " + peer.GetIP());
+                            }
+                            
                             await peer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.PongCode));
 
                         }
@@ -230,17 +242,28 @@ namespace ShakaCoin.Networking
         {
             await checkPeer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.PingCode));
             checkPeer.SetPinged();
-            Console.WriteLine("Sending ping to " + checkPeer.GetIP());
+            if (_isOnNetworkDebug)
+            {
+                Console.WriteLine("Sending ping to " + checkPeer.GetIP());
+            }
+                
 
             await Task.Delay(NetworkConstants.AcceptableWaitPing);
 
             if (!checkPeer.IsDeltaPongAcceptable())
             {
-                Console.WriteLine("Peer @ " + checkPeer.GetIP() + " failed ping test");
+                if (_isOnNetworkDebug)
+                {
+                    Console.WriteLine("Peer @ " + checkPeer.GetIP() + " failed ping test");
+                }
+                    
                 KillPeer(checkPeer);
             } else
             {
-                Console.WriteLine("Peer @ " + checkPeer.GetIP() + " passed the ping test");
+                if (_isOnNetworkDebug)
+                {
+                    Console.WriteLine("Peer @ " + checkPeer.GetIP() + " passed the ping test");
+                }
             }
 
         }
@@ -343,6 +366,11 @@ namespace ShakaCoin.Networking
         public List<Peer> ListPeers()
         {
             return _peerDict.Values.ToList();
+        }
+
+        public List<string> ListPeerIps()
+        {
+            return _peerDict.Keys.ToList();
         }
 
         public Peer[] GetNPeers(int n)

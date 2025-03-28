@@ -48,17 +48,20 @@ namespace ShakaCoin.MainInteraction
                 _wallet = new Wallet(_fm.ReadWallet(WalletName), WalletName);
             }
 
-            _ = RunPeerNode();
+
 
             _blockchainHandler = new BlockchainHandler(_isValidatorNode);
             _blockchainHandler.MinerPubKey = _wallet.GetPublicKey();
             _blockchainHandler.CheckBlockchain();
 
+            _ = RunBootstrap();
+
             MainLoopAsync();
 
-            
+
 
         }
+
 
         private void DisplayWalletData()
         {
@@ -183,6 +186,8 @@ namespace ShakaCoin.MainInteraction
 
                 UtilConsole.MainOptions(_isValidatorNode);
 
+                _peerManager._isOnNetworkDebug = false;
+
                 string? line = Console.ReadLine();
 
                 if (line != null && line.Length > 0)
@@ -192,6 +197,22 @@ namespace ShakaCoin.MainInteraction
                     {
                         Environment.Exit(0);
                         return;
+                    }
+
+                    else if (line.ToLower()[0] == 'k')
+                    {
+                        UtilConsole.ClearScreen();
+                        DisplayWalletData();
+                        List<string> ips = _peerManager.ListPeerIps();
+                        Console.WriteLine("Listing " + ips.Count +" peers");
+                        for (int i=0; i<ips.Count;i++)
+                        {
+                            Console.WriteLine("#" + i.ToString() + " - " + ips[i]);
+                        }
+                        Console.WriteLine();
+                        _peerManager._isOnNetworkDebug = true;
+
+                        Console.ReadLine();
                     }
 
                     else if (line.ToLower()[0] == 'b') // get balance
@@ -434,7 +455,7 @@ namespace ShakaCoin.MainInteraction
         {
 
             _peerManager = new PeerManager(true);
-
+            
             _peerManager._blockchainHandler = _blockchainHandler;
             _blockchainHandler._peerManager = _peerManager;
 

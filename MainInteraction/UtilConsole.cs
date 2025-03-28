@@ -29,6 +29,7 @@ namespace ShakaCoin.MainInteraction
             Console.WriteLine("ShakaCoin Options: ");
             Console.WriteLine("Press [B] to find an account balance");
             Console.WriteLine("Press [T] to make a transaction");
+            Console.WriteLine("Press [K] to view connected nodes");
             if (isValidator)
             {
                 Console.WriteLine("Press [V] to view blockchain");
