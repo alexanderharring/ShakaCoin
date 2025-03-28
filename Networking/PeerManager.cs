@@ -42,7 +42,11 @@ namespace ShakaCoin.Networking
             _listener.Start();
             _running = true;
 
-            Console.WriteLine("Started running P2P server on " + NetworkConstants.Port.ToString());
+            if (_isOnNetworkDebug)
+            {
+                Console.WriteLine("Started running P2P server on " + NetworkConstants.Port.ToString());
+            }
+            
             if (_amIBootstrap)
             {
                 Console.WriteLine("This node is a bootstrap node.");
@@ -130,7 +134,11 @@ namespace ShakaCoin.Networking
 
                             string myIP = peer.GetMyIP();
 
-                            DisplayPeerList(ipAds, myIP);
+                            if (_isOnNetworkDebug)
+                            {
+                                DisplayPeerList(ipAds, myIP);
+                            }
+                            
 
                             foreach (string ip in ipAds)
                             {
@@ -396,7 +404,11 @@ namespace ShakaCoin.Networking
             var newPeer = new Peer(tcpClient);
             _peerDict[newPeer.GetIP()] = newPeer;
 
-            Console.WriteLine("Connected to other peer @ " + newPeer.GetIP());
+            if (_isOnNetworkDebug)
+            {
+                Console.WriteLine("Connected to other peer @ " + newPeer.GetIP());
+            }
+            
         }
 
         public List<Peer> ListPeers()
