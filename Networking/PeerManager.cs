@@ -222,8 +222,11 @@ namespace ShakaCoin.Networking
                         else if (hexCode == NetworkConstants.ReturnBlock) {
                             
                             Block builtBlock = Parser.ParseBlock(otherData);
-
-                            Console.WriteLine("Building block " +  builtBlock.BlockHeight.ToString());
+                            if (_isOnNetworkDebug)
+                            {
+                                Console.WriteLine("Building block " + builtBlock.BlockHeight.ToString());
+                            }
+                            
                             FileManagement.Instance.WriteBlock(builtBlock);
                         }
                     }
@@ -337,9 +340,12 @@ namespace ShakaCoin.Networking
             _peerDict[newPeer.GetIP()] = newPeer;
 
             _ = HandlePeer(newPeer);
+            if (_isOnNetworkDebug)
+            {
+                Console.WriteLine("Connected to bootstrap node.");
+                Console.WriteLine("This node's IP is " + newPeer.GetMyIP());
+            }
 
-            Console.WriteLine("Connected to bootstrap node.");
-            Console.WriteLine("This node's IP is " + newPeer.GetMyIP());
 
             await newPeer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.GetPeersCode));
         }
