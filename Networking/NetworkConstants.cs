@@ -24,6 +24,7 @@ namespace ShakaCoin.Networking
         public static readonly string RequestMaxBlockHeight = "CCBABA";
         public static readonly string ReturnMaxBlockHeight = "CCABAB";
         public static readonly int PingDuration = 3000;
+        public static readonly int ChainUpdate = 5000;
         public static readonly int AcceptableWaitPing = 800;
         public static readonly int DiffusionNumber = 2;
         public static readonly byte HopCount = 3;

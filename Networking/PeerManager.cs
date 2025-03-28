@@ -48,6 +48,7 @@ namespace ShakaCoin.Networking
                 Console.WriteLine("This node is a bootstrap node.");
             }
             _ = CheckPeerStatuses();
+            _ = CheckPeerBlockHeight();
 
             while (_running)
             {
@@ -185,7 +186,14 @@ namespace ShakaCoin.Networking
                         }
                         else if (hexCode == NetworkConstants.ReturnMaxBlockHeight)
                         {
+                            
+
                             uint maxH = BitConverter.ToUInt32(otherData);
+
+                            if (maxH > FileManagement.Instance.maxBlockNum)
+                            {
+                                Console.WriteLine("UH OH");
+                            }
 
                             for (uint blockCount=(FileManagement.Instance.maxBlockNum)+1; blockCount <= maxH; blockCount++)
                             {
@@ -235,6 +243,19 @@ namespace ShakaCoin.Networking
                 }
 
                 await Task.Delay(NetworkConstants.PingDuration);
+            }
+        }
+
+        private async Task CheckPeerBlockHeight()
+        {
+            while (true)
+            {
+                foreach (Peer checkPeer in _peerDict.Values)
+                {
+                    _ = checkPeer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.PongCode));
+                }
+
+                await Task.Delay(NetworkConstants.ChainUpdate);
             }
         }
 
