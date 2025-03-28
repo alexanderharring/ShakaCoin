@@ -30,10 +30,11 @@ namespace ShakaCoin.MainInteraction
             Console.WriteLine("Press [B] to find an account balance");
             Console.WriteLine("Press [T] to make a transaction");
             Console.WriteLine("Press [K] to view connected nodes");
+            Console.WriteLine("Press [G] to get UTXOs for your wallet");
             if (isValidator)
             {
                 Console.WriteLine("Press [V] to view blockchain");
-                Console.WriteLine("Press [S] to find a transaction");
+                Console.WriteLine("Press [S] to pull up an UTXO");
                 Console.WriteLine("Press [M] to start mining");
                 Console.WriteLine("Press [Q] to swap to verifier node");
             } else

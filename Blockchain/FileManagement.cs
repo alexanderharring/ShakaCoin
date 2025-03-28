@@ -72,8 +72,8 @@ namespace ShakaCoin.Blockchain
                 Directory.CreateDirectory(BlockHeaderDir);
             }
 
-
             _outputDB = new DatabaseInteraction(OutputsDir);
+            CheckGenesisBlock();
         }
 
         public void WriteBlock(Block block)
@@ -105,6 +105,7 @@ namespace ShakaCoin.Blockchain
 
                 _outputDB.AddValue(key, value);
 
+                
             }
         }
 
@@ -222,7 +223,11 @@ namespace ShakaCoin.Blockchain
             string fName = "o" + fileInd.ToString() + ".dat";
             string fileP = Path.Combine(OutputBFsDir, fName);
 
-            File.WriteAllBytes(fileP, new byte[8192]);
+            if (!(File.Exists(fileP)))
+            {
+                File.WriteAllBytes(fileP, new byte[8192]);
+            }
+            
 
             using (FileStream fs = File.OpenWrite(fileP))
             {
@@ -352,8 +357,9 @@ namespace ShakaCoin.Blockchain
             {
 
                 byte[] obfBytes = GetOutputBF(i);
+
                 OutputBloomFilter obf = Parser.ParseBloomFilter(obfBytes);
-                // this is bugging
+
                 if (obf.ProbablyContains(pk))
                 {
 
@@ -365,7 +371,6 @@ namespace ShakaCoin.Blockchain
                         {
                             if (Hasher.GetHexStringQuick(pk) == Hasher.GetHexStringQuick(ox.DestinationPublicKey))
                             {
-                                Console.WriteLine(i);
                                 bal += ox.Amount;
                             }
                         }
@@ -375,6 +380,46 @@ namespace ShakaCoin.Blockchain
             }
 
             return bal;
+        }
+
+        public List<byte[]> GetUTXOsForPK(byte[] pubKey)
+        {
+            List<byte[]> result = new List<byte[]>();
+
+            for (uint i = 0; i <= maxBlockNum; i++)
+            {
+
+                byte[] obfBytes = GetOutputBF(i);
+
+
+                OutputBloomFilter obf = Parser.ParseBloomFilter(obfBytes);
+
+                if (obf.ProbablyContains(pubKey))
+                {
+
+                    Block blk = Parser.ParseBlock(ReadBlock(i));
+
+                    foreach (Transaction tx in blk.Transactions)
+                    {
+                        for (int j = 0; j<tx.Outputs.Count; j++)
+                        {
+                            Output ox = tx.Outputs[j];
+
+                            if (Hasher.GetHexStringQuick(pubKey) == Hasher.GetHexStringQuick(ox.DestinationPublicKey))
+                            {
+                                byte[] outpoint = new byte[33];
+                                Buffer.BlockCopy(Hasher.Hash256(tx.GetBytes()), 0, outpoint, 0, 32);
+                                outpoint[32] = (byte)j;
+                                result.Add(outpoint);
+                            }
+                        }
+
+                    }
+
+                }
+            }
+
+            return result;
         }
 
         public byte[] ReadWallet(string name)

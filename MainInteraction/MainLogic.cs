@@ -216,6 +216,19 @@ namespace ShakaCoin.MainInteraction
 
                         Console.ReadLine();
                     }
+                    else if (line.ToLower()[0] == 'g')
+                    {
+                        UtilConsole.ClearScreen();
+                        DisplayWalletData();
+
+                        List<byte[]> outpoints = _fm.GetUTXOsForPK(_wallet.GetPublicKey());
+                        Console.WriteLine("Listing " + outpoints.Count + " UTXOs:");
+                        for (int j=0; j < outpoints.Count; j++)
+                        {
+                            Console.WriteLine("#" + j.ToString() + " - " + Hasher.GetHexStringQuick(outpoints[j]));
+                        }
+                        Console.ReadLine();
+                    }
 
                     else if (line.ToLower()[0] == 'b') // get balance
                     {
@@ -423,7 +436,7 @@ namespace ShakaCoin.MainInteraction
 
                     }
 
-                    else if (line.ToLower()[0] == 's') // search for a transaction
+                    else if (line.ToLower()[0] == 's') // search for a utxo
                     {
 
                     }

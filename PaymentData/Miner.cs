@@ -43,7 +43,7 @@ namespace ShakaCoin.PaymentData
             Input ix = new Input(new byte[32], 0xFF);
 
             byte[] fakeSignature = new byte[64];
-            byte[] copySource = Hasher.GetBytesQuick("This is the coinbase transaction of the genesis block. :)");
+            byte[] copySource = Hasher.Hash512(Hasher.GetBytesQuick("This is the coinbase transaction of the genesis block. :)" + tBlock.BlockHeight.ToString()));
             Array.Copy(copySource, fakeSignature, copySource.Length);
 
             ix.AddSignature(fakeSignature);

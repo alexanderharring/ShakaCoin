@@ -43,6 +43,7 @@ namespace ShakaCoin.PaymentData
 
         public void CheckBlockchain()
         {
+            _currentBlockHeight = 0;
             while (true)
             {
                 byte[] dta = FileManagement.ReadBlock(_currentBlockHeight);
