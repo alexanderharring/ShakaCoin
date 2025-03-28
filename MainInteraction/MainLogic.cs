@@ -48,7 +48,8 @@ namespace ShakaCoin.MainInteraction
                 _wallet = new Wallet(_fm.ReadWallet(WalletName), WalletName);
             }
 
-            //_ = RunPeerNode();
+            _ = RunPeerNode();
+
             _blockchainHandler = new BlockchainHandler(_isValidatorNode);
             _blockchainHandler.MinerPubKey = _wallet.GetPublicKey();
             _blockchainHandler.CheckBlockchain();
