@@ -258,6 +258,7 @@ namespace ShakaCoin.Networking
         {
             while (true)
             {
+                _blockchainHandler.CheckBlockchain();
                 foreach (Peer checkPeer in _peerDict.Values)
                 {
                     _ = checkPeer.SendMessage(Hasher.GetBytesFromHexStringQuick(NetworkConstants.RequestMaxBlockHeight));
