@@ -63,6 +63,7 @@ namespace ShakaCoin.Blockchain
             Output buildOX = new Output(mainAmount, pubK);
 
             List<(Input, byte[])> inputList = FileManagement.Instance.GetInputsForTransaction(GetPublicKey(), mainAmount);
+
             if (inputList is null)
             {
                 return null;

@@ -44,12 +44,12 @@ namespace ShakaCoin.PaymentData
             Target[3] = 0xF0;
             gBlock.Target = Target;
             gBlock.Version = 0x00;
+            gBlock.TimeStamp = 1741334817;
 
             WorkingBlock _wb = new WorkingBlock(gBlock);
             _wb.GenerateMerkleRoot();
 
             gBlock.MerkleRoot = _wb.MerkleRoot;
-            gBlock.TimeStamp = 1741334817;
             gBlock.MiningIncrement = 19953029;
 
             return gBlock;

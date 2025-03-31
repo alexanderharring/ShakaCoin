@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.Testing.Platform.Extensions.Messages;
+using NSec.Cryptography;
 using ShakaCoin.Datastructures;
 using ShakaCoin.PaymentData;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -143,10 +144,12 @@ namespace ShakaCoin.Blockchain
                                 byte[] key = new byte[33];
 
                                 Buffer.BlockCopy(Hasher.Hash256(tx.GetBytes()), 0, key, 0, 32);
-                                key[32] = (byte)i;
+                                key[32] = (byte)oxI;
+
 
                                 if (!(DBGetValue(key) is null))
                                 {
+
                                     bal += tx.Outputs[oxI].Amount;
                                     Input newInput = new Input(Hasher.Hash256(tx.GetBytes()), (byte)oxI);
                                     inputList.Add((newInput, key));
@@ -367,13 +370,24 @@ namespace ShakaCoin.Blockchain
 
                     foreach (Transaction tx in blk.Transactions)
                     {
-                        foreach (Output ox in tx.Outputs)
+                        for (int j = 0; j < tx.Outputs.Count; j++)
                         {
+                            Output ox = tx.Outputs[j];
+
                             if (Hasher.GetHexStringQuick(pk) == Hasher.GetHexStringQuick(ox.DestinationPublicKey))
                             {
-                                bal += ox.Amount;
+                                byte[] outpoint = new byte[33];
+                                Buffer.BlockCopy(Hasher.Hash256(tx.GetBytes()), 0, outpoint, 0, 32);
+                                outpoint[32] = (byte)j;
+
+                                if (!(DBGetValue(outpoint) is null))
+                                {
+                                    bal += ox.Amount;
+                                }
+
                             }
                         }
+
                     }
 
                 }
@@ -410,7 +424,12 @@ namespace ShakaCoin.Blockchain
                                 byte[] outpoint = new byte[33];
                                 Buffer.BlockCopy(Hasher.Hash256(tx.GetBytes()), 0, outpoint, 0, 32);
                                 outpoint[32] = (byte)j;
-                                result.Add(outpoint);
+
+                                if (!(DBGetValue(outpoint) is null))
+                                {
+                                    result.Add(outpoint);
+                                }
+                                
                             }
                         }
 

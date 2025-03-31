@@ -343,7 +343,9 @@ namespace ShakaCoin.MainInteraction
                                                     Console.WriteLine("Could not form a transaction.");
                                                 } else
                                                 {
-                                                    Console.WriteLine("YAY");
+                                                    Console.WriteLine("Transaction generation successful. Distributing to network");
+
+                                                    _ = _peerManager.DiffuseTransaction(generatedTransaction, NetworkConstants.HopCount);
                                                 }
 
                                                 Console.ReadLine();

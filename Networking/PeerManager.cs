@@ -167,6 +167,10 @@ namespace ShakaCoin.Networking
                         }
                         else if (hexCode == NetworkConstants.TransactionCode)
                         {
+                            if (_isOnNetworkDebug)
+                            {
+                                Console.WriteLine("Received TX from network from " + peer.GetIP());
+                            }
                             byte[] tx = new byte[otherData.Length - 1];
                             Buffer.BlockCopy(otherData, 0, tx, 0, otherData.Length - 1);
 
@@ -360,40 +364,38 @@ namespace ShakaCoin.Networking
 
         public async Task DiffuseTransaction(Transaction tx, byte hopCount)
         {
-            Console.WriteLine("diffusing tx");
 
-            //byte[] txBytes = tx.GetBytes();
+            byte[] txBytes = tx.GetBytes();
 
-            //byte[] message = new byte[txBytes.Length + 4];
-            //Buffer.BlockCopy(Hasher.GetBytesFromHexStringQuick(NetworkConstants.TransactionCode), 0, message, 0, 3);
-            //Buffer.BlockCopy(txBytes, 0, message, 3, txBytes.Length);
-            //message[txBytes.Length + 3] = hopCount;
+            byte[] message = new byte[txBytes.Length + 4];
+            Buffer.BlockCopy(Hasher.GetBytesFromHexStringQuick(NetworkConstants.TransactionCode), 0, message, 0, 3);
+            Buffer.BlockCopy(txBytes, 0, message, 3, txBytes.Length);
+            message[txBytes.Length + 3] = hopCount;
 
-            //Peer[] targets = GetNPeers(NetworkConstants.DiffusionNumber);
+            Peer[] targets = GetNPeers(NetworkConstants.DiffusionNumber);
 
-            //foreach (Peer t in targets)
-            //{
-            //    await t.SendMessage(message);
-            //}
+            foreach (Peer t in targets)
+            {
+                await t.SendMessage(message);
+            }
         }
 
         public async Task DiffuseBlock(Block blk, byte hopCount)
         {
-            Console.WriteLine("diffusing blk");
 
-            //byte[] blkBytes = blk.GetBlockBytes();
+            byte[] blkBytes = blk.GetBlockBytes();
 
-            //byte[] message = new byte[blkBytes.Length + 4];
-            //Buffer.BlockCopy(Hasher.GetBytesFromHexStringQuick(NetworkConstants.BlockCode), 0, message, 0, 3);
-            //Buffer.BlockCopy(blkBytes, 0, message, 3, blkBytes.Length);
-            //message[blkBytes.Length + 3] = hopCount;
+            byte[] message = new byte[blkBytes.Length + 4];
+            Buffer.BlockCopy(Hasher.GetBytesFromHexStringQuick(NetworkConstants.BlockCode), 0, message, 0, 3);
+            Buffer.BlockCopy(blkBytes, 0, message, 3, blkBytes.Length);
+            message[blkBytes.Length + 3] = hopCount;
 
-            //Peer[] targets = GetNPeers(NetworkConstants.DiffusionNumber);
+            Peer[] targets = GetNPeers(NetworkConstants.DiffusionNumber);
 
-            //foreach (Peer t in targets)
-            //{
-            //    await t.SendMessage(message);
-            //}
+            foreach (Peer t in targets)
+            {
+                await t.SendMessage(message);
+            }
         }
 
         public async Task ConnectToNewPeer(string ipAd)

@@ -26,7 +26,7 @@ namespace ShakaCoin.Networking
         public static readonly int PingDuration = 3000;
         public static readonly int ChainUpdate = 5000;
         public static readonly int AcceptableWaitPing = 800;
-        public static readonly int DiffusionNumber = 2;
+        public static readonly int DiffusionNumber = 3;
         public static readonly byte HopCount = 3;
         
 
