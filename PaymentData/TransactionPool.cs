@@ -64,11 +64,17 @@ namespace ShakaCoin.PaymentData
 
         public void AddTx(Transaction nTX)
         {
+            
             txPoolSize += nTX.GetBytes().Length;
 
             if (!(_TXroot is null))
             {
-                _TXroot.Insert(nTX);
+                if (!_TXroot.Contains(nTX))
+                {
+                    _TXroot.Insert(nTX);
+                }
+
+                
             } else
             {
                 _TXroot = new TXNodeAVL(nTX);
