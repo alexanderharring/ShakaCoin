@@ -62,22 +62,26 @@ namespace ShakaCoin.Blockchain
 
             Output buildOX = new Output(mainAmount, pubK);
 
-            List<(Input, byte[])> inputList = FileManagement.Instance.GetInputsForTransaction(GetPublicKey(), mainAmount);
+            List<(Input, byte[], ulong)> inputList = FileManagement.Instance.GetInputsForTransaction(GetPublicKey(), mainAmount);
 
             if (inputList is null)
             {
                 return null;
             }
 
-            foreach ((Input, byte[]) input in inputList)
+            ulong sumInputs = 0;
+
+            foreach ((Input, byte[], ulong) input in inputList)
             {
                 input.Item1.AddSignature(SignData(input.Item2));
 
                 buildTx.AddInput(input.Item1);
+
+                sumInputs += input.Item3;
             }
 
 
-            ulong returnAmt = mainAmount - minerFee;
+            ulong returnAmt = sumInputs - mainAmount - minerFee;
             buildTx.AddOutput(buildOX);
 
             Output rx = new Output(returnAmt, GetPublicKey());

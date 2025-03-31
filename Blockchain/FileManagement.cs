@@ -118,10 +118,10 @@ namespace ShakaCoin.Blockchain
             }
         }
 
-        public List<(Input, byte[])> GetInputsForTransaction(byte[] pubkey, ulong amountReq)
+        public List<(Input, byte[], ulong)> GetInputsForTransaction(byte[] pubkey, ulong amountReq)
         {
             ulong bal = 0;
-            List<(Input, byte[])> inputList = new List<(Input, byte[])>();
+            List<(Input, byte[], ulong)> inputList = new List<(Input, byte[], ulong)>();
 
             for (uint i = 0; i < maxBlockNum; i++)
             {
@@ -152,7 +152,7 @@ namespace ShakaCoin.Blockchain
 
                                     bal += tx.Outputs[oxI].Amount;
                                     Input newInput = new Input(Hasher.Hash256(tx.GetBytes()), (byte)oxI);
-                                    inputList.Add((newInput, key));
+                                    inputList.Add((newInput, key, tx.Outputs[oxI].Amount));
 
                                     if (bal > amountReq)
                                     {
