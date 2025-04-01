@@ -1,4 +1,4 @@
-﻿using Microsoft.Testing.Platform.Extensions.Messages;
+﻿    using Microsoft.Testing.Platform.Extensions.Messages;
 using ShakaCoin.Blockchain;
 using ShakaCoin.Networking;
 using ShakaCoin.PaymentData;

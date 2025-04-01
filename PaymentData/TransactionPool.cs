@@ -82,5 +82,16 @@ namespace ShakaCoin.PaymentData
 
             
         }
+
+        public void RemoveIfIn(Transaction nTX)
+        {
+            if (!(_TXroot is null))
+            {
+                if (_TXroot.Contains(nTX))
+                {
+                    _TXroot.Delete(nTX);
+                }
+            }
+        }
     }
 }

@@ -102,6 +102,11 @@ namespace ShakaCoin.PaymentData
 
             }
 
+            foreach (Transaction tx in blk.Transactions)
+            {
+                _txPool.RemoveIfIn(tx);
+            }
+
             if (_peerManager != null)
             {
                 if (hopCount > 0)
