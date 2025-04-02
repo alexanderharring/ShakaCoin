@@ -112,8 +112,11 @@ namespace ShakaCoin.PaymentData
 
         public void StopMining()
         {
-            Console.WriteLine("\nStopped mining...");
-            _shouldBeMining = false;
+            if (_shouldBeMining)
+            {
+                Console.WriteLine("\nStopped mining...");
+                _shouldBeMining = false;
+            }
         }
     }
 }

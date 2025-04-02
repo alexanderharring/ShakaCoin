@@ -104,6 +104,7 @@ namespace ShakaCoin.MainInteraction
 
                         List<string> wallts = _fm.GetAllWallets();
 
+                        Console.WriteLine("\nListing " + wallts.Count + " wallets:");
                         foreach (string w in wallts)
                         {
                             Console.WriteLine(w);

@@ -20,7 +20,7 @@ namespace ShakaCoin
         {
 
             MainLogic ml = new MainLogic();
-
+            
         }
     }
 }
